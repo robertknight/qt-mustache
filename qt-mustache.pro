@@ -9,6 +9,10 @@ INCLUDEPATH += . src tests
 QT += testlib
 QT -= gui
 
+!win32 {
+  QMAKE_CXXFLAGS += -Wall -Werror -Wextra
+}
+
 # Input
 HEADERS += src/mustache.h tests/test_mustache.h
 SOURCES += src/mustache.cpp tests/test_mustache.cpp

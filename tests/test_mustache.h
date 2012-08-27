@@ -23,11 +23,12 @@ class TestMustache : public QObject
 	Q_OBJECT
 
 	private Q_SLOTS:
-		void testValues();
-		void testSections();
-		void testPartials();
-		void testSetDelimiters();
-		void testErrors();
 		void testContextLookup();
+		void testErrors();
+		void testPartialFile();
+		void testPartials();
+		void testSections();
+		void testSetDelimiters();
+		void testValues();
 };
 

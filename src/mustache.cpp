@@ -15,6 +15,8 @@
 #include "mustache.h"
 
 #include <QtCore/QDebug>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
 
 // for Qt::escape()
 #include <QtGui/QTextDocument>
@@ -111,6 +113,23 @@ PartialMap::PartialMap(const QHash<QString, QString> &partials)
 QString PartialMap::getPartial(const QString &name)
 {
     return m_partials.value(name);
+}
+
+PartialFileLoader::PartialFileLoader(const QString& basePath)
+	: m_basePath(basePath)
+{}
+
+QString PartialFileLoader::getPartial(const QString& name)
+{
+	if (!m_cache.contains(name)) {
+		QString path = m_basePath + '/' + name + ".mustache";
+		QFile file(path);
+		if (file.open(QIODevice::ReadOnly)) {
+			QTextStream stream(&file);
+			m_cache.insert(name, stream.readAll());
+		}
+	}
+	return m_cache.value(name);
 }
 
 Renderer::Renderer()

@@ -115,6 +115,23 @@ private:
 	QHash<QString, QString> m_partials;
 };
 
+/** A partial fetcher when loads templates from '<name>.mustache' files
+ * in a given directory. 
+ * 
+ * Once a partial has been loaded, it is cached for future use.
+ */
+class PartialFileLoader : public PartialResolver
+{
+public:
+	explicit PartialFileLoader(const QString& basePath);
+
+	virtual QString getPartial(const QString& name);
+
+private:
+	QString m_basePath;
+	QHash<QString, QString> m_cache;
+};
+
 /** Holds properties of a tag in a mustache template. */
 struct Tag
 {

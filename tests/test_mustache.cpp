@@ -192,5 +192,28 @@ void TestMustache::testErrors()
 	QCOMPARE(renderer.errorPartial(), QString("buggy-partial"));
 }
 
-QTEST_APPLESS_MAIN(TestMustache)
+void TestMustache::testPartialFile()
+{
+	QString path = QCoreApplication::applicationDirPath();
+
+	QVariantMap map = contactInfo("Jim Smith", "jim.smith@gmail.com");
+
+	QString _template = "{{>partial}}";
+
+	Mustache::Renderer renderer;
+	Mustache::PartialFileLoader partialLoader(path);
+	Mustache::QtVariantContext context(map, &partialLoader);
+	QString output = renderer.render(_template, &context);
+
+	QCOMPARE(output, QString("Jim Smith -- jim.smith@gmail.com\n"));
+}
+
+// Create a QCoreApplication for the test.  In Qt 5 this can be
+// done with QTEST_GUILESS_MAIN().
+int main(int argc, char** argv)
+{
+	QCoreApplication app(argc, argv);
+	TestMustache testObject;
+	return QTest::qExec(&testObject, argc, argv);
+}
 

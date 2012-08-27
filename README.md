@@ -20,7 +20,7 @@ QTextStream output(stdout);
 output << renderer.render(contactTemplate, &context);
 ```
 
-Outputs: '<b>John Smith</b> <a href="mailto:john.smith@gmail.com">john.smith@gmail.com</a>'
+Outputs: `<b>John Smith</b> <a href="mailto:john.smith@gmail.com">john.smith@gmail.com</a>`
 
 For further examples, see the tests in `test_mustache.cpp`
 

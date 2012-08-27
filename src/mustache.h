@@ -36,10 +36,8 @@ public:
 
 	/** Returns a string representation of the value for @p key in the current context.
 	  * This is used to replace a Mustache value tag.
-	  *
-	  * If @p escape is true, the value should be HTML escaped, eg. using Qt::escape().
 	  */
-	virtual QString stringValue(const QString& key, bool escape) const = 0;
+	virtual QString stringValue(const QString& key) const = 0;
 
 	/** Returns true if the value for @p key is 'false' or an empty list.
 	  * 'False' values typically include empty strings, the boolean value false etc.
@@ -82,7 +80,7 @@ public:
 
 	explicit QtVariantContext(const QVariantMap& root, PartialResolver* resolver = 0);
 
-	virtual QString stringValue(const QString& key, bool escape) const;
+	virtual QString stringValue(const QString& key) const;
 	virtual bool isFalse(const QString& key) const;
 	virtual int listCount(const QString& key) const;
 	virtual void push(const QString& key, int index = -1);
@@ -147,18 +145,25 @@ struct Tag
         SetDelimiter /// A {{=<% %>=}} tag
     };
 
+	enum EscapeMode
+	{
+		Escape,
+		Unescape,
+		Raw
+	};
+
     Tag()
         : type(Null)
         , start(0)
         , end(0)
-        , escape(true)
+        , escapeMode(Escape)
     {}
 
     Type type;
     QString key;
     int start;
     int end;
-    bool escape;
+	EscapeMode escapeMode;
 };
 
 /** Renders Mustache templates, replacing mustache tags with

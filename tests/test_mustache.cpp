@@ -208,6 +208,22 @@ void TestMustache::testPartialFile()
 	QCOMPARE(output, QString("Jim Smith -- jim.smith@gmail.com\n"));
 }
 
+void TestMustache::testEscaping()
+{
+	QVariantMap map;
+	map["escape"] = "<b>foo</b>";
+	map["unescape"] = "One &amp; Two";
+	map["raw"] = "<b>foo</b>";
+
+	QString _template = "{{escape}} {{&unescape}} {{{raw}}}";
+
+	Mustache::Renderer renderer;
+	Mustache::QtVariantContext context(map);
+	QString output = renderer.render(_template, &context);
+
+	QCOMPARE(output, QString("&lt;b&gt;foo&lt;/b&gt; One & Two <b>foo</b>"));
+}
+
 // Create a QCoreApplication for the test.  In Qt 5 this can be
 // done with QTEST_GUILESS_MAIN().
 int main(int argc, char** argv)

@@ -23,6 +23,16 @@
 
 using namespace Mustache;
 
+QString unescapeHtml(const QString& escaped)
+{
+	QString unescaped(escaped);
+	unescaped.replace("&lt;", "<");
+	unescaped.replace("&gt;", ">");
+	unescaped.replace("&amp;", "&");
+	unescaped.replace("&quot;", "\"");
+	return unescaped;
+}
+
 Context::Context(PartialResolver *resolver)
     : m_partialResolver(resolver)
 {}
@@ -69,17 +79,12 @@ bool QtVariantContext::isFalse(const QString& key) const
     }
 }
 
-QString QtVariantContext::stringValue(const QString& key, bool escape) const
+QString QtVariantContext::stringValue(const QString& key) const
 {
-    Q_UNUSED(escape);
     if (isFalse(key)) {
         return QString();
     }
-    QString result = value(key).toString();
-    if (escape) {
-        result = Qt::escape(result);
-    }
-    return result;
+	return value(key).toString();
 }
 
 void QtVariantContext::push(const QString& key, int index)
@@ -177,7 +182,12 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
         switch (tag.type) {
 		case Tag::Value:
 		{
-			QString value = context->stringValue(tag.key, tag.escape);
+			QString value = context->stringValue(tag.key);
+			if (tag.escapeMode == Tag::Escape) {
+				value = Qt::escape(value);
+			} else if (tag.escapeMode == Tag::Unescape) {
+				value = unescapeHtml(value);
+			}
 			output += value;
 			lastTagEnd = tag.end;
 		}
@@ -296,8 +306,11 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
         tag.type = Tag::SetDelimiter;
         readSetDelimiter(content, pos+1, tagEndPos - m_tagEndMarker.length());
     } else {
-        if (typeChar == '{') {
-            tag.escape = false;
+		if (typeChar == '&') {
+			tag.escapeMode = Tag::Unescape;
+			++pos;
+		} else if (typeChar == '{') {
+            tag.escapeMode = Tag::Raw;
             ++pos;
 			int endTache = content.indexOf('}', pos);
 			if (endTache == tag.end - m_tagEndMarker.length()) {

@@ -30,5 +30,6 @@ class TestMustache : public QObject
 		void testSections();
 		void testSetDelimiters();
 		void testValues();
+		void testEscaping();
 };
 

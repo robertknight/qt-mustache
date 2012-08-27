@@ -22,6 +22,7 @@ namespace Mustache
 {
 
 class PartialResolver;
+class Renderer;
 
 /** Context is an interface that Mustache::Renderer::render() uses to
   * fetch substitutions for template tags.
@@ -61,12 +62,30 @@ public:
 
 	/** Exit the current context. */
 	virtual void pop() = 0;
-
+	
 	/** Returns the partial template for a given @p key. */
 	QString partialValue(const QString& key) const;
 
 	/** Returns the partial resolver passed to the constructor. */
 	PartialResolver* partialResolver() const;
+
+	/** Returns true if eval() should be used to render section tags using @p key.
+	 * If canEval() returns true for a key, the renderer will pass the literal, unrendered
+	 * block of text for the section to eval() and replace the section with the result.
+	 *
+	 * canEval() and eval() are equivalents for callable objects (eg. lambdas) in other
+	 * Mustache implementations.
+	 *
+	 * The default implementation always returns false.
+	 */
+	virtual bool canEval(const QString& key) const;
+
+	/** Callback used to render a template section with the given @p key.
+	 * @p renderer will substitute the original section tag with the result of eval().
+	 * 
+	 * The default implementation returns an empty string.
+	 */
+	virtual QString eval(const QString& key, const QString& _template, Renderer* renderer);
 
 private:
 	PartialResolver* m_partialResolver;

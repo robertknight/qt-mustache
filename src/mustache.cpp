@@ -50,6 +50,20 @@ QString Context::partialValue(const QString &key) const
     return m_partialResolver->getPartial(key);
 }
 
+bool Context::canEval(const QString&) const
+{
+	return false;
+}
+
+QString Context::eval(const QString& key, const QString& _template, Renderer* renderer)
+{
+	Q_UNUSED(key);
+	Q_UNUSED(_template);
+	Q_UNUSED(renderer);
+
+	return QString();
+}
+
 QtVariantContext::QtVariantContext(const QVariantMap &root, PartialResolver * resolver)
     : Context(resolver)
 {
@@ -205,8 +219,9 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 					output += render(_template, tag.end, endTag.start, context);
 					context->pop();
 				}
-			}
-			else if (!context->isFalse(tag.key)) {
+			} else if (context->canEval(tag.key)) {
+				output += context->eval(tag.key, _template.mid(tag.end, endTag.start - tag.end), this);
+			} else if (!context->isFalse(tag.key)) {
 				context->push(tag.key);
 				output += render(_template, tag.end, endTag.start, context);
 				context->pop();

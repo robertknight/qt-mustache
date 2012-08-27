@@ -224,6 +224,53 @@ void TestMustache::testEscaping()
 	QCOMPARE(output, QString("&lt;b&gt;foo&lt;/b&gt; One & Two <b>foo</b>"));
 }
 
+class CounterContext : public Mustache::QtVariantContext
+{
+public:
+	int counter;
+
+	CounterContext(const QVariantMap& map)
+	: Mustache::QtVariantContext(map)
+	, counter(0)
+	{}
+
+	virtual bool canEval(const QString& key) const {
+		return key == "counter";
+	}
+
+	virtual QString eval(const QString& key, const QString& _template, Mustache::Renderer* renderer) {
+		if (key == "counter") {
+			++counter;
+		}
+		return renderer->render(_template, this);
+	}
+
+	virtual QString stringValue(const QString& key) const {
+		if (key == "count") {
+			return QString::number(counter);
+		} else {
+			return Mustache::QtVariantContext::stringValue(key);
+		}
+	}
+};
+
+void TestMustache::testEval()
+{
+	QVariantMap map;
+	QVariantList list;
+	list << contactInfo("Rob Knight", "robertknight@gmail.com");
+	list << contactInfo("Jim Smith", "jim.smith@smith.org");
+	map["list"] = list;
+
+	QString _template = "{{#list}}{{#counter}}#{{count}} {{name}} {{email}}{{/counter}}\n{{/list}}";
+
+	Mustache::Renderer renderer;
+	CounterContext context(map);
+	QString output = renderer.render(_template, &context);
+	QCOMPARE(output, QString("#1 Rob Knight robertknight@gmail.com\n"
+	                         "#2 Jim Smith jim.smith@smith.org\n"));
+}
+
 // Create a QCoreApplication for the test.  In Qt 5 this can be
 // done with QTEST_GUILESS_MAIN().
 int main(int argc, char** argv)

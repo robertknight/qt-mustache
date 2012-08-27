@@ -84,6 +84,28 @@ void TestMustache::testSections()
 	QCOMPARE(output, expectedOutput);
 }
 
+void TestMustache::testContextLookup()
+{
+	QVariantMap fileMap;
+	fileMap["dir"] = "/home/robert";
+	fileMap["name"] = "robert";
+
+	QVariantList files;
+	QVariantMap file;
+	file["name"] = "test.pdf";
+	files << file;
+
+	fileMap["files"] = files;
+
+	QString _template = "{{#files}}{{dir}}/{{name}}{{/files}}";
+
+	Mustache::Renderer renderer;
+	Mustache::QtVariantContext context(fileMap);
+	QString output = renderer.render(_template, &context);
+
+	QCOMPARE(output, QString("/home/robert/test.pdf"));
+}
+
 void TestMustache::testPartials()
 {
 	QHash<QString, QString> partials;

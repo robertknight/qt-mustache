@@ -46,7 +46,12 @@ QtVariantContext::QtVariantContext(const QVariantMap &root, PartialResolver * re
 
 QVariant QtVariantContext::value(const QString& key) const
 {
-    return m_contextStack.top().value(key);
+	for (int i = m_contextStack.count()-1; i >= 0; i--) {
+		if (m_contextStack.at(i).contains(key)) {
+			return m_contextStack.at(i).value(key);
+		}
+	}
+    return QVariant();
 }
 
 bool QtVariantContext::isFalse(const QString& key) const

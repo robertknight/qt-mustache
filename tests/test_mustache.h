@@ -28,5 +28,6 @@ class TestMustache : public QObject
 		void testPartials();
 		void testSetDelimiters();
 		void testErrors();
+		void testContextLookup();
 };
 

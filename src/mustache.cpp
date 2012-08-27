@@ -18,10 +18,17 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
-// for Qt::escape()
-#include <QtGui/QTextDocument>
-
 using namespace Mustache;
+
+QString escapeHtml(const QString& input)
+{
+	QString escaped(input);
+	escaped.replace('&', "&amp;");
+	escaped.replace('<', "&lt;");
+	escaped.replace('>', "&gt;");
+	escaped.replace('"', "&quot;");
+	return escaped;
+}
 
 QString unescapeHtml(const QString& escaped)
 {
@@ -208,7 +215,7 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 		{
 			QString value = context->stringValue(tag.key);
 			if (tag.escapeMode == Tag::Escape) {
-				value = Qt::escape(value);
+				value = escapeHtml(value);
 			} else if (tag.escapeMode == Tag::Unescape) {
 				value = unescapeHtml(value);
 			}

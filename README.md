@@ -32,7 +32,7 @@ For further examples, see the tests in `test_mustache.cpp`
  qt-mustache is licensed under the BSD license. 
 
 ### Dependencies
- qt-mustache depends on the QtCore and QtGui libraries from Qt 4.  The QtGui dependency can be easily removed if necessary.
+ qt-mustache depends on the QtCore library from Qt 4.
  
 ## Usage
 

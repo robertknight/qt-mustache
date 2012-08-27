@@ -212,7 +212,7 @@ void TestMustache::testEscaping()
 {
 	QVariantHash map;
 	map["escape"] = "<b>foo</b>";
-	map["unescape"] = "One &amp; Two";
+	map["unescape"] = "One &amp; Two &quot;quoted&quot;";
 	map["raw"] = "<b>foo</b>";
 
 	QString _template = "{{escape}} {{&unescape}} {{{raw}}}";
@@ -221,7 +221,7 @@ void TestMustache::testEscaping()
 	Mustache::QtVariantContext context(map);
 	QString output = renderer.render(_template, &context);
 
-	QCOMPARE(output, QString("&lt;b&gt;foo&lt;/b&gt; One & Two <b>foo</b>"));
+	QCOMPARE(output, QString("&lt;b&gt;foo&lt;/b&gt; One & Two \"quoted\" <b>foo</b>"));
 }
 
 class CounterContext : public Mustache::QtVariantContext

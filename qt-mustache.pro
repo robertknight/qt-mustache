@@ -7,6 +7,7 @@ TARGET =
 DEPENDPATH += . src tests
 INCLUDEPATH += . src tests
 QT += testlib
+QT -= gui
 
 # Input
 HEADERS += src/mustache.h tests/test_mustache.h

@@ -61,3 +61,10 @@ You can re-implement the `Mustache::PartialResolver` interface if you want to lo
 If an error occurs when rendering a template, `Mustache::Renderer::errorPosition()` is set to non-negative value and
 template rendering stops.  If the error occurs whilst rendering a partial template, `errorPartial()` contains the name
 of the partial.
+
+### Lambdas
+
+The [Mustache manual](http://mustache.github.com/mustache.5.html) provides a mechanism to customize rendering of
+template sections by setting the value for a tag to a callable object (eg. a lambda in Ruby or Javascript),
+which takes the unrendered block of text for a template section and renders it itself.  qt-mustache supports
+this via the `Context::canEval()` and `Context::eval()` methods.

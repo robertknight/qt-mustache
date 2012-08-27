@@ -95,8 +95,6 @@ private:
 class QtVariantContext : public Context
 {
 public:
-	typedef QHash<QString, QString> PartialMap;
-
 	/** Construct a QtVariantContext which wraps a dictionary in a QVariantHash
 	 * or a QVariantMap.
 	 */

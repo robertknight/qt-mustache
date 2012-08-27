@@ -34,3 +34,30 @@ For further examples, see the tests in `test_mustache.cpp`
 ### Dependencies
  qt-mustache depends on the QtCore and QtGui libraries from Qt 4.  The QtGui dependency can be easily removed if necessary.
  
+## Usage
+
+### Syntax
+
+qt-mustache uses the standard Mustache syntax.  See the [Mustache manual](http://mustache.github.com/mustache.5.html) for details.
+
+### Data Sources
+
+qt-mustache expands Mustache tags using values from a `Mustache::Context`.  `Mustache::QtVariantContext` is a simple
+context implementation which wraps a `QVariantMap`.  If you want to render a template using a custom data source,
+you can either create a `QVariantMap` which mirrors the data source or you can re-implement `Mustache::Context`.
+
+### Partials
+
+When a `{{>partial}}` Mustache tag is encountered, qt-mustache will attempt to load the partial using a `Mustache::PartialResolver`
+provided by the context.  `Mustache::PartialMap` is a simple resolver which takes a `QHash<QString,QString>` map of partial names
+to values and looks up partials in that map.  `Mustache::PartialFileLoader` is another simple resolver which
+fetches partials from `<partial name>.mustache` files in a specified directory.
+
+You can re-implement the `Mustache::PartialResolver` interface if you want to load partials from a custom source
+(eg. a database).
+
+### Error Handling
+
+If an error occurs when rendering a template, `Mustache::Renderer::errorPosition()` is set to non-negative value and
+template rendering stops.  If the error occurs whilst rendering a partial template, `errorPartial()` contains the name
+of the partial.

@@ -40,7 +40,7 @@ QString unescapeHtml(const QString& escaped)
 	return unescaped;
 }
 
-Context::Context(PartialResolver *resolver)
+Context::Context(PartialResolver* resolver)
     : m_partialResolver(resolver)
 {}
 
@@ -49,7 +49,7 @@ PartialResolver* Context::partialResolver() const
     return m_partialResolver;
 }
 
-QString Context::partialValue(const QString &key) const
+QString Context::partialValue(const QString& key) const
 {
     if (!m_partialResolver) {
         return QString();
@@ -71,7 +71,7 @@ QString Context::eval(const QString& key, const QString& _template, Renderer* re
 	return QString();
 }
 
-QtVariantContext::QtVariantContext(const QVariant &root, PartialResolver * resolver)
+QtVariantContext::QtVariantContext(const QVariant& root, PartialResolver* resolver)
     : Context(resolver)
 {
     m_contextStack << root;
@@ -142,11 +142,11 @@ int QtVariantContext::listCount(const QString& key) const
     return 0;
 }
 
-PartialMap::PartialMap(const QHash<QString, QString> &partials)
+PartialMap::PartialMap(const QHash<QString, QString>& partials)
     : m_partials(partials)
 {}
 
-QString PartialMap::getPartial(const QString &name)
+QString PartialMap::getPartial(const QString& name)
 {
     return m_partials.value(name);
 }

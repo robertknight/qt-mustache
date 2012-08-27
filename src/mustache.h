@@ -218,7 +218,7 @@ public:
 	QString errorPartial() const;
 
 private:
-	QString render(const QString& _template, int startPos, int endPos, Context *context);
+	QString render(const QString& _template, int startPos, int endPos, Context* context);
 
 	Tag findTag(const QString& content, int pos, int endPos);
 	Tag findEndTag(const QString& content, const Tag& startTag, int endPos);

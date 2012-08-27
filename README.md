@@ -7,7 +7,7 @@ qt-mustache is a simple library for rendering [Mustache templates](http://mustac
 ```cpp
 #include "mustache.h"
 
-QVariantMap contact;
+QVariantHash contact;
 contact["name"] = "John Smith";
 contact["email"] = "john.smith@gmail.com";
 
@@ -43,8 +43,8 @@ qt-mustache uses the standard Mustache syntax.  See the [Mustache manual](http:/
 ### Data Sources
 
 qt-mustache expands Mustache tags using values from a `Mustache::Context`.  `Mustache::QtVariantContext` is a simple
-context implementation which wraps a `QVariantMap`.  If you want to render a template using a custom data source,
-you can either create a `QVariantMap` which mirrors the data source or you can re-implement `Mustache::Context`.
+context implementation which wraps a `QVariantHash` or `QVariantMap`.  If you want to render a template using a custom data source,
+you can either create a `QVariantHash` which mirrors the data source or you can re-implement `Mustache::Context`.
 
 ### Partials
 

@@ -16,7 +16,7 @@
 
 void TestMustache::testValues()
 {
-	QVariantMap map;
+	QVariantHash map;
 	map["name"] = "John Smith";
 	map["age"] = 42;
 	map["sex"] = "Male";
@@ -38,9 +38,9 @@ void TestMustache::testValues()
 	QCOMPARE(output, expectedOutput);
 }
 
-QVariantMap contactInfo(const QString& name, const QString& email)
+QVariantHash contactInfo(const QString& name, const QString& email)
 {
-	QVariantMap map;
+	QVariantHash map;
 	map["name"] = name;
 	map["email"] = email;
 	return map;
@@ -48,7 +48,7 @@ QVariantMap contactInfo(const QString& name, const QString& email)
 
 void TestMustache::testSections()
 {
-	QVariantMap map = contactInfo("John Smith", "john.smith@gmail.com");
+	QVariantHash map = contactInfo("John Smith", "john.smith@gmail.com");
 	QVariantList contacts;
 	contacts << contactInfo("James Dee", "james@dee.org");
 	contacts << contactInfo("Jim Jones", "jim-jones@yahoo.com");
@@ -78,7 +78,7 @@ void TestMustache::testSections()
 	QCOMPARE(output, expectedOutput);
 
 	// test with an empty list instead of an empty key
-	map["contacts"] = QVariantMap();
+	map["contacts"] = QVariantHash();
 	context = Mustache::QtVariantContext(map);
 	output = renderer.render(_template, &context);
 	QCOMPARE(output, expectedOutput);
@@ -86,12 +86,12 @@ void TestMustache::testSections()
 
 void TestMustache::testContextLookup()
 {
-	QVariantMap fileMap;
+	QVariantHash fileMap;
 	fileMap["dir"] = "/home/robert";
 	fileMap["name"] = "robert";
 
 	QVariantList files;
-	QVariantMap file;
+	QVariantHash file;
 	file["name"] = "test.pdf";
 	files << file;
 
@@ -113,15 +113,15 @@ void TestMustache::testPartials()
 
 	QString _template = "{{#files}}{{>file-info}}{{/files}}";
 
-	QVariantMap map;
+	QVariantHash map;
 	QVariantList fileList;
 	
-	QVariantMap file1;
+	QVariantHash file1;
 	file1["name"] = "mustache.pdf";
 	file1["size"] = "200KB";
 	file1["type"] = "PDF Document";
 
-	QVariantMap file2;
+	QVariantHash file2;
 	file2["name"] = "cv.doc";
 	file2["size"] = "300KB";
 	file2["type"] = "Microsoft Word Document";
@@ -141,7 +141,7 @@ void TestMustache::testPartials()
 
 void TestMustache::testSetDelimiters()
 {
-	QVariantMap map;
+	QVariantHash map;
 	map["name"] = "John Smith";
 	map["phone"] = "01234 567890";
 
@@ -162,7 +162,7 @@ void TestMustache::testSetDelimiters()
 
 void TestMustache::testErrors()
 {
-	QVariantMap map;
+	QVariantHash map;
 	map["name"] = "Jim Jones";
 
 	QHash<QString, QString> partials;
@@ -196,7 +196,7 @@ void TestMustache::testPartialFile()
 {
 	QString path = QCoreApplication::applicationDirPath();
 
-	QVariantMap map = contactInfo("Jim Smith", "jim.smith@gmail.com");
+	QVariantHash map = contactInfo("Jim Smith", "jim.smith@gmail.com");
 
 	QString _template = "{{>partial}}";
 
@@ -210,7 +210,7 @@ void TestMustache::testPartialFile()
 
 void TestMustache::testEscaping()
 {
-	QVariantMap map;
+	QVariantHash map;
 	map["escape"] = "<b>foo</b>";
 	map["unescape"] = "One &amp; Two";
 	map["raw"] = "<b>foo</b>";
@@ -229,7 +229,7 @@ class CounterContext : public Mustache::QtVariantContext
 public:
 	int counter;
 
-	CounterContext(const QVariantMap& map)
+	CounterContext(const QVariantHash& map)
 	: Mustache::QtVariantContext(map)
 	, counter(0)
 	{}
@@ -256,7 +256,7 @@ public:
 
 void TestMustache::testEval()
 {
-	QVariantMap map;
+	QVariantHash map;
 	QVariantList list;
 	list << contactInfo("Rob Knight", "robertknight@gmail.com");
 	list << contactInfo("Jim Smith", "jim.smith@smith.org");

@@ -91,13 +91,16 @@ private:
 	PartialResolver* m_partialResolver;
 };
 
-/** A context implementation which wraps a QVariantMap. */
+/** A context implementation which wraps a QVariantHash or QVariantMap. */
 class QtVariantContext : public Context
 {
 public:
 	typedef QHash<QString, QString> PartialMap;
 
-	explicit QtVariantContext(const QVariantMap& root, PartialResolver* resolver = 0);
+	/** Construct a QtVariantContext which wraps a dictionary in a QVariantHash
+	 * or a QVariantMap.
+	 */
+	explicit QtVariantContext(const QVariant& root, PartialResolver* resolver = 0);
 
 	virtual QString stringValue(const QString& key) const;
 	virtual bool isFalse(const QString& key) const;
@@ -108,7 +111,7 @@ public:
 private:
 	QVariant value(const QString& key) const;
 
-	QStack<QVariantMap> m_contextStack;
+	QStack<QVariant> m_contextStack;
 };
 
 /** Interface for fetching template partials. */

@@ -64,17 +64,27 @@ QString Context::eval(const QString& key, const QString& _template, Renderer* re
 	return QString();
 }
 
-QtVariantContext::QtVariantContext(const QVariantMap &root, PartialResolver * resolver)
+QtVariantContext::QtVariantContext(const QVariant &root, PartialResolver * resolver)
     : Context(resolver)
 {
     m_contextStack << root;
 }
 
+QVariant variantMapValue(const QVariant& value, const QString& key)
+{
+	if (value.userType() == QVariant::Map) {
+		return value.toMap().value(key);
+	} else {
+		return value.toHash().value(key);
+	}
+}
+
 QVariant QtVariantContext::value(const QString& key) const
 {
 	for (int i = m_contextStack.count()-1; i >= 0; i--) {
-		if (m_contextStack.at(i).contains(key)) {
-			return m_contextStack.at(i).value(key);
+		QVariant value = variantMapValue(m_contextStack.at(i), key);
+		if (!value.isNull()) {
+			return value;
 		}
 	}
     return QVariant();
@@ -103,12 +113,12 @@ QString QtVariantContext::stringValue(const QString& key) const
 
 void QtVariantContext::push(const QString& key, int index)
 {
-	QVariant mapItem = m_contextStack.top().value(key);
+	QVariant mapItem = value(key);
     if (index == -1) {
-        m_contextStack << mapItem.toMap();
+        m_contextStack << mapItem;
     } else {
         QVariantList list = mapItem.toList();
-        m_contextStack << list.value(index, QVariant()).toMap();
+        m_contextStack << list.value(index, QVariant());
     }
 }
 

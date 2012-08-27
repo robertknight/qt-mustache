@@ -23,20 +23,35 @@ using namespace Mustache;
 QString escapeHtml(const QString& input)
 {
 	QString escaped(input);
-	escaped.replace('&', "&amp;");
-	escaped.replace('<', "&lt;");
-	escaped.replace('>', "&gt;");
-	escaped.replace('"', "&quot;");
+	for (int i=0; i < escaped.count();) {
+		const char* replacement = 0;
+		ushort ch = escaped.at(i).unicode();
+		if (ch == '&') {
+			replacement = "&amp;";
+		} else if (ch == '<') {
+			replacement = "&lt;";
+		} else if (ch == '>') {
+			replacement = "&gt;";
+		} else if (ch == '"') {
+			replacement = "&quot;";
+		}
+		if (replacement) {
+			escaped.replace(i, 1, QLatin1String(replacement));
+			i += strlen(replacement);
+		} else {
+			++i;
+		}
+	}
 	return escaped;
 }
 
 QString unescapeHtml(const QString& escaped)
 {
 	QString unescaped(escaped);
-	unescaped.replace("&lt;", "<");
-	unescaped.replace("&gt;", ">");
-	unescaped.replace("&amp;", "&");
-	unescaped.replace("&quot;", "\"");
+	unescaped.replace(QLatin1String("&lt;"), QLatin1String("<"));
+	unescaped.replace(QLatin1String("&gt;"), QLatin1String(">"));
+	unescaped.replace(QLatin1String("&amp;"), QLatin1String("&"));
+	unescaped.replace(QLatin1String("&quot;"), QLatin1String("\""));
 	return unescaped;
 }
 
@@ -361,6 +376,7 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 QString Renderer::readTagName(const QString& content, int pos, int endPos)
 {
     QString name;
+	name.reserve(endPos - pos);
     while (content.at(pos).isSpace()) {
         ++pos;
     }

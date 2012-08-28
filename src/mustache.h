@@ -62,7 +62,7 @@ public:
 
 	/** Exit the current context. */
 	virtual void pop() = 0;
-	
+
 	/** Returns the partial template for a given @p key. */
 	QString partialValue(const QString& key) const;
 
@@ -82,7 +82,7 @@ public:
 
 	/** Callback used to render a template section with the given @p key.
 	 * @p renderer will substitute the original section tag with the result of eval().
-	 * 
+	 *
 	 * The default implementation returns an empty string.
 	 */
 	virtual QString eval(const QString& key, const QString& _template, Renderer* renderer);
@@ -134,8 +134,8 @@ private:
 };
 
 /** A partial fetcher when loads templates from '<name>.mustache' files
- * in a given directory. 
- * 
+ * in a given directory.
+ *
  * Once a partial has been loaded, it is cached for future use.
  */
 class PartialFileLoader : public PartialResolver
@@ -153,17 +153,17 @@ private:
 /** Holds properties of a tag in a mustache template. */
 struct Tag
 {
-    enum Type
-    {
-        Null,
-        Value, /// A {{key}} or {{{key}}} tag
-        SectionStart, /// A {{#section}} tag
-        InvertedSectionStart, /// An {{^inverted-section}} tag
-        SectionEnd, /// A {{/section}} tag
-        Partial, /// A {{^partial}} tag
-        Comment, /// A {{! comment }} tag
-        SetDelimiter /// A {{=<% %>=}} tag
-    };
+	enum Type
+	{
+		Null,
+		Value, /// A {{key}} or {{{key}}} tag
+		SectionStart, /// A {{#section}} tag
+		InvertedSectionStart, /// An {{^inverted-section}} tag
+		SectionEnd, /// A {{/section}} tag
+		Partial, /// A {{^partial}} tag
+		Comment, /// A {{! comment }} tag
+		SetDelimiter /// A {{=<% %>=}} tag
+	};
 
 	enum EscapeMode
 	{
@@ -172,17 +172,17 @@ struct Tag
 		Raw
 	};
 
-    Tag()
-        : type(Null)
-        , start(0)
-        , end(0)
-        , escapeMode(Escape)
-    {}
+	Tag()
+		: type(Null)
+		, start(0)
+		, end(0)
+		, escapeMode(Escape)
+	{}
 
-    Type type;
-    QString key;
-    int start;
-    int end;
+	Type type;
+	QString key;
+	int start;
+	int end;
 	EscapeMode escapeMode;
 };
 

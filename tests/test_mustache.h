@@ -22,15 +22,15 @@ class TestMustache : public QObject
 {
 	Q_OBJECT
 
-	private Q_SLOTS:
-		void testContextLookup();
-		void testErrors();
-		void testPartialFile();
-		void testPartials();
-		void testSections();
-		void testSetDelimiters();
-		void testValues();
-		void testEscaping();
-		void testEval();
+private Q_SLOTS:
+	void testContextLookup();
+	void testErrors();
+	void testPartialFile();
+	void testPartials();
+	void testSections();
+	void testSetDelimiters();
+	void testValues();
+	void testEscaping();
+	void testEval();
 };
 

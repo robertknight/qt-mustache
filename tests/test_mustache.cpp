@@ -25,7 +25,7 @@ void TestMustache::testValues()
 
 	QString _template = "Name: {{name}}, Age: {{age}}, Sex: {{sex}}\n"
 	                    "Company: {{company}}\n"
-						"  {{{signature}}}"
+	                    "  {{{signature}}}"
 	                    "{{missing-key}}";
 	QString expectedOutput = "Name: John Smith, Age: 42, Sex: Male\n"
 	                         "Company: Smith &amp; Co\n"
@@ -56,7 +56,7 @@ void TestMustache::testSections()
 
 	QString _template = "Name: {{name}}, Email: {{email}}\n"
 	                    "{{#contacts}}  {{name}} - {{email}}\n{{/contacts}}"
-						"{{^contacts}}  No contacts{{/contacts}}";
+	                    "{{^contacts}}  No contacts{{/contacts}}";
 
 	QString expectedOutput = "Name: John Smith, Email: john.smith@gmail.com\n"
 	                         "  James Dee - james@dee.org\n"
@@ -115,7 +115,7 @@ void TestMustache::testPartials()
 
 	QVariantHash map;
 	QVariantList fileList;
-	
+
 	QVariantHash file1;
 	file1["name"] = "mustache.pdf";
 	file1["size"] = "200KB";
@@ -135,8 +135,8 @@ void TestMustache::testPartials()
 	QString output = renderer.render(_template, &context);
 
 	QCOMPARE(output,
-	 QString("mustache.pdf 200KB PDF Document\n"
-	         "cv.doc 300KB Microsoft Word Document\n"));
+	         QString("mustache.pdf 200KB PDF Document\n"
+	                 "cv.doc 300KB Microsoft Word Document\n"));
 }
 
 void TestMustache::testSetDelimiters()
@@ -146,13 +146,13 @@ void TestMustache::testSetDelimiters()
 	map["phone"] = "01234 567890";
 
 	QString _template =
-	  "{{=<% %>=}}"
-	  "<%name%>{{ }}<%phone%>"
-	  "<%={{ }}=%>"
-	  " {{name}}<% %>{{phone}}";
+	    "{{=<% %>=}}"
+	    "<%name%>{{ }}<%phone%>"
+	    "<%={{ }}=%>"
+	    " {{name}}<% %>{{phone}}";
 
 	QString expectedOutput = "John Smith{{ }}01234 567890 John Smith<% %>01234 567890";
-	
+
 	Mustache::Renderer renderer;
 	Mustache::QtVariantContext context(map);
 	QString output = renderer.render(_template, &context);
@@ -230,8 +230,8 @@ public:
 	int counter;
 
 	CounterContext(const QVariantHash& map)
-	: Mustache::QtVariantContext(map)
-	, counter(0)
+		: Mustache::QtVariantContext(map)
+		, counter(0)
 	{}
 
 	virtual bool canEval(const QString& key) const {

@@ -217,6 +217,11 @@ public:
 	 */
 	QString errorPartial() const;
 
+	/** Sets the default tag start and end markers.
+	  * This can be overridden within a template.
+	  */
+	void setTagMarkers(const QString& startMarker, const QString& endMarker);
+
 private:
 	QString render(const QString& _template, int startPos, int endPos, Context* context);
 
@@ -234,6 +239,9 @@ private:
 
 	QString m_tagStartMarker;
 	QString m_tagEndMarker;
+
+	QString m_defaultTagStartMarker;
+	QString m_defaultTagEndMarker;
 };
 
 /** A convenience function which renders a template using the given data. */

@@ -141,6 +141,7 @@ void TestMustache::testPartials()
 
 void TestMustache::testSetDelimiters()
 {
+	// test changing the markers within a template
 	QVariantHash map;
 	map["name"] = "John Smith";
 	map["phone"] = "01234 567890";
@@ -158,6 +159,11 @@ void TestMustache::testSetDelimiters()
 	QString output = renderer.render(_template, &context);
 
 	QCOMPARE(output, expectedOutput);
+
+	// test changing the default markers
+	renderer.setTagMarkers("%", "%");
+	output = renderer.render("%name%'s phone number is %phone%", &context);
+	QCOMPARE(output, QString("John Smith's phone number is 01234 567890"));
 }
 
 void TestMustache::testErrors()

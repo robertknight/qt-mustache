@@ -192,6 +192,8 @@ QString PartialFileLoader::getPartial(const QString& name)
 
 Renderer::Renderer()
 	: m_errorPos(-1)
+	, m_defaultTagStartMarker("{{")
+	, m_defaultTagEndMarker("}}")
 {
 }
 
@@ -212,8 +214,8 @@ QString Renderer::errorPartial() const
 
 QString Renderer::render(const QString& _template, Context* context)
 {
-	m_tagStartMarker = "{{";
-	m_tagEndMarker = "}}";
+	m_tagStartMarker = m_defaultTagStartMarker;
+	m_tagEndMarker = m_defaultTagEndMarker;
 
 	return render(_template, 0, _template.length(), context);
 }
@@ -327,7 +329,7 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 		return Tag();
 	}
 
-	int tagEndPos = content.indexOf(m_tagEndMarker, tagStartPos) + m_tagEndMarker.length();
+	int tagEndPos = content.indexOf(m_tagEndMarker, tagStartPos + m_tagStartMarker.length()) + m_tagEndMarker.length();
 	if (tagEndPos == -1) {
 		return Tag();
 	}
@@ -449,5 +451,11 @@ Tag Renderer::findEndTag(const QString& content, const Tag& startTag, int endPos
 	}
 
 	return Tag();
+}
+
+void Renderer::setTagMarkers(const QString& startMarker, const QString& endMarker)
+{
+	m_defaultTagStartMarker = startMarker;
+	m_defaultTagEndMarker = endMarker;
 }
 

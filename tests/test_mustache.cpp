@@ -271,6 +271,16 @@ void TestMustache::testEval()
 	                         "#2 Jim Smith jim.smith@smith.org\n"));
 }
 
+void TestMustache::testHelpers()
+{
+	QVariantHash args;
+	args.insert("name", "Jim Smith");
+	args.insert("age", 42);
+
+	QString output = Mustache::renderTemplate("Hello {{name}}, you are {{age}}", args);
+	QCOMPARE(output, QString("Hello Jim Smith, you are 42"));
+}
+
 // Create a QCoreApplication for the test.  In Qt 5 this can be
 // done with QTEST_GUILESS_MAIN().
 int main(int argc, char** argv)

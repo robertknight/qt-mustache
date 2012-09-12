@@ -20,6 +20,13 @@
 
 using namespace Mustache;
 
+QString Mustache::renderTemplate(const QString& templateString, const QVariantHash& args)
+{
+	Mustache::QtVariantContext context(args);
+	Mustache::Renderer renderer;
+	return renderer.render(templateString, &context);
+}
+
 QString escapeHtml(const QString& input)
 {
 	QString escaped(input);

@@ -236,4 +236,7 @@ private:
 	QString m_tagEndMarker;
 };
 
+/** A convenience function which renders a template using the given data. */
+QString renderTemplate(const QString& templateString, const QVariantHash& args);
+
 };

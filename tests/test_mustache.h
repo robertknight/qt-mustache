@@ -32,5 +32,6 @@ private Q_SLOTS:
 	void testValues();
 	void testEscaping();
 	void testEval();
+	void testHelpers();
 };
 

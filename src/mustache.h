@@ -34,6 +34,7 @@ public:
 	  * which appear in a template.
 	  */
 	explicit Context(PartialResolver* resolver = 0);
+	virtual ~Context() {}
 
 	/** Returns a string representation of the value for @p key in the current context.
 	  * This is used to replace a Mustache value tag.
@@ -116,6 +117,8 @@ private:
 class PartialResolver
 {
 public:
+	virtual ~PartialResolver() {}
+
 	/** Returns the partial template with a given @p name. */
 	virtual QString getPartial(const QString& name) = 0;
 };

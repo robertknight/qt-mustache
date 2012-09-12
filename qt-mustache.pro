@@ -10,7 +10,7 @@ QT += testlib
 QT -= gui
 
 !win32 {
-  QMAKE_CXXFLAGS += -Wall -Werror -Wextra
+  QMAKE_CXXFLAGS += -Werror -Wall -Wextra -Wnon-virtual-dtor
 }
 
 # Input

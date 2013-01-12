@@ -14,25 +14,43 @@
 
 #include "mustache.h"
 
+#ifdef USE_QT
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
+QString& adapt(QString& str)
+{
+	return str;
+}
+const QString& adapt(const QString& str)
+{
+	return str;
+}
+#else
+#include "stlstringadapter.h"
+#define Q_UNUSED(x) (void)x;
+#endif
+
+#include <string.h>
+
 using namespace Mustache;
 
-QString Mustache::renderTemplate(const QString& templateString, const QVariantHash& args)
+#ifdef USE_QT
+StringType Mustache::renderTemplate(const StringType& templateString, const QVariantHash& args)
 {
 	Mustache::QtVariantContext context(args);
 	Mustache::Renderer renderer;
 	return renderer.render(templateString, &context);
 }
+#endif
 
-QString escapeHtml(const QString& input)
+StringType escapeHtml(const StringType& input)
 {
-	QString escaped(input);
-	for (int i=0; i < escaped.count();) {
+	StringType escaped(input);
+	for (int i=0; i < adapt(escaped).count();) {
 		const char* replacement = 0;
-		ushort ch = escaped.at(i).unicode();
+		unsigned short ch = adapt(escaped).at(i).unicode();
 		if (ch == '&') {
 			replacement = "&amp;";
 		} else if (ch == '<') {
@@ -43,7 +61,7 @@ QString escapeHtml(const QString& input)
 			replacement = "&quot;";
 		}
 		if (replacement) {
-			escaped.replace(i, 1, QLatin1String(replacement));
+			adapt(escaped).replace(i, 1, replacement);
 			i += strlen(replacement);
 		} else {
 			++i;
@@ -52,13 +70,13 @@ QString escapeHtml(const QString& input)
 	return escaped;
 }
 
-QString unescapeHtml(const QString& escaped)
+StringType unescapeHtml(const StringType& escaped)
 {
-	QString unescaped(escaped);
-	unescaped.replace(QLatin1String("&lt;"), QLatin1String("<"));
-	unescaped.replace(QLatin1String("&gt;"), QLatin1String(">"));
-	unescaped.replace(QLatin1String("&amp;"), QLatin1String("&"));
-	unescaped.replace(QLatin1String("&quot;"), QLatin1String("\""));
+	StringType unescaped(escaped);
+	adapt(unescaped).replace("&lt;", "<");
+	adapt(unescaped).replace("&gt;", ">");
+	adapt(unescaped).replace("&amp;", "&");
+	adapt(unescaped).replace("&quot;", "\"");
 	return unescaped;
 }
 
@@ -71,35 +89,36 @@ PartialResolver* Context::partialResolver() const
 	return m_partialResolver;
 }
 
-QString Context::partialValue(const QString& key) const
+StringType Context::partialValue(const StringType& key) const
 {
 	if (!m_partialResolver) {
-		return QString();
+		return StringType();
 	}
 	return m_partialResolver->getPartial(key);
 }
 
-bool Context::canEval(const QString&) const
+bool Context::canEval(const StringType&) const
 {
 	return false;
 }
 
-QString Context::eval(const QString& key, const QString& _template, Renderer* renderer)
+StringType Context::eval(const StringType& key, const StringType& _template, Renderer* renderer)
 {
 	Q_UNUSED(key);
 	Q_UNUSED(_template);
 	Q_UNUSED(renderer);
 
-	return QString();
+	return StringType();
 }
 
+#ifdef USE_QT
 QtVariantContext::QtVariantContext(const QVariant& root, PartialResolver* resolver)
 	: Context(resolver)
 {
-	m_contextStack << root;
+	m_contextStack.push(root);
 }
 
-QVariant variantMapValue(const QVariant& value, const QString& key)
+QVariant variantMapValue(const QVariant& value, const StringType& key)
 {
 	if (value.userType() == QVariant::Map) {
 		return value.toMap().value(key);
@@ -108,9 +127,9 @@ QVariant variantMapValue(const QVariant& value, const QString& key)
 	}
 }
 
-QVariant QtVariantContext::value(const QString& key) const
+QVariant QtVariantContext::value(const StringType& key) const
 {
-	for (int i = m_contextStack.count()-1; i >= 0; i--) {
+	for (int i = m_contextStack.size()-1; i >= 0; i--) {
 		QVariant value = variantMapValue(m_contextStack.at(i), key);
 		if (!value.isNull()) {
 			return value;
@@ -119,7 +138,7 @@ QVariant QtVariantContext::value(const QString& key) const
 	return QVariant();
 }
 
-bool QtVariantContext::isFalse(const QString& key) const
+bool QtVariantContext::isFalse(const StringType& key) const
 {
 	QVariant value = this->value(key);
 	switch (value.userType()) {
@@ -132,15 +151,15 @@ bool QtVariantContext::isFalse(const QString& key) const
 	}
 }
 
-QString QtVariantContext::stringValue(const QString& key) const
+StringType QtVariantContext::stringValue(const StringType& key) const
 {
 	if (isFalse(key)) {
-		return QString();
+		return StringType();
 	}
 	return value(key).toString();
 }
 
-void QtVariantContext::push(const QString& key, int index)
+void QtVariantContext::push(const StringType& key, int index)
 {
 	QVariant mapItem = value(key);
 	if (index == -1) {
@@ -156,31 +175,35 @@ void QtVariantContext::pop()
 	m_contextStack.pop();
 }
 
-int QtVariantContext::listCount(const QString& key) const
+int QtVariantContext::listCount(const StringType& key) const
 {
 	if (value(key).userType() == QVariant::List) {
 		return value(key).toList().count();
 	}
 	return 0;
 }
+#endif
 
-PartialMap::PartialMap(const QHash<QString, QString>& partials)
+#ifdef USE_QT
+PartialMap::PartialMap(const QHash<StringType, StringType>& partials)
 	: m_partials(partials)
 {}
 
-QString PartialMap::getPartial(const QString& name)
+StringType PartialMap::getPartial(const StringType& name)
 {
 	return m_partials.value(name);
 }
+#endif
 
-PartialFileLoader::PartialFileLoader(const QString& basePath)
+#ifdef USE_QT
+PartialFileLoader::PartialFileLoader(const StringType& basePath)
 	: m_basePath(basePath)
 {}
 
-QString PartialFileLoader::getPartial(const QString& name)
+StringType PartialFileLoader::getPartial(const StringType& name)
 {
 	if (!m_cache.contains(name)) {
-		QString path = m_basePath + '/' + name + ".mustache";
+		StringType path = m_basePath + '/' + name + ".mustache";
 		QFile file(path);
 		if (file.open(QIODevice::ReadOnly)) {
 			QTextStream stream(&file);
@@ -189,6 +212,7 @@ QString PartialFileLoader::getPartial(const QString& name)
 	}
 	return m_cache.value(name);
 }
+#endif
 
 Renderer::Renderer()
 	: m_errorPos(-1)
@@ -197,7 +221,7 @@ Renderer::Renderer()
 {
 }
 
-QString Renderer::error() const
+StringType Renderer::error() const
 {
 	return m_error;
 }
@@ -207,12 +231,12 @@ int Renderer::errorPos() const
 	return m_errorPos;
 }
 
-QString Renderer::errorPartial() const
+StringType Renderer::errorPartial() const
 {
 	return m_errorPartial;
 }
 
-QString Renderer::render(const QString& _template, Context* context)
+StringType Renderer::render(const StringType& _template, Context* context)
 {
 	m_tagStartMarker = m_defaultTagStartMarker;
 	m_tagEndMarker = m_defaultTagEndMarker;
@@ -220,24 +244,24 @@ QString Renderer::render(const QString& _template, Context* context)
 	return render(_template, 0, _template.length(), context);
 }
 
-QString Renderer::render(const QString& _template, int startPos, int endPos, Context* context)
+StringType Renderer::render(const StringType& _template, int startPos, int endPos, Context* context)
 {
-	setError(QString(), -1);
+	setError(StringType(), -1);
 
-	QString output;
+	StringType output;
 	int lastTagEnd = startPos;
 
 	while (m_errorPos == -1) {
 		Tag tag = findTag(_template, lastTagEnd, endPos);
 		if (tag.type == Tag::Null) {
-			output += _template.midRef(lastTagEnd, endPos - lastTagEnd);
+			output += adapt(_template).midRef(lastTagEnd, endPos - lastTagEnd);
 			break;
 		}
-		output += _template.midRef(lastTagEnd, tag.start - lastTagEnd);
+		output += adapt(_template).midRef(lastTagEnd, tag.start - lastTagEnd);
 		switch (tag.type) {
 		case Tag::Value:
 		{
-			QString value = context->stringValue(tag.key);
+			StringType value = context->stringValue(tag.key);
 			if (tag.escapeMode == Tag::Escape) {
 				value = escapeHtml(value);
 			} else if (tag.escapeMode == Tag::Unescape) {
@@ -261,7 +285,7 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 					context->pop();
 				}
 			} else if (context->canEval(tag.key)) {
-				output += context->eval(tag.key, _template.mid(tag.end, endTag.start - tag.end), this);
+				output += context->eval(tag.key, adapt(_template).mid(tag.end, endTag.start - tag.end), this);
 			} else if (!context->isFalse(tag.key)) {
 				context->push(tag.key);
 				output += render(_template, tag.end, endTag.start, context);
@@ -290,7 +314,7 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 		{
 			m_partialStack.push(tag.key);
 
-			QString partial = context->partialValue(tag.key);
+			StringType partial = context->partialValue(tag.key);
 			output += render(partial, 0, partial.length(), context);
 			lastTagEnd = tag.end;
 
@@ -311,25 +335,25 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 	return output;
 }
 
-void Renderer::setError(const QString& error, int pos)
+void Renderer::setError(const StringType& error, int pos)
 {
 	m_error = error;
 	m_errorPos = pos;
 
-	if (!m_partialStack.isEmpty())
+	if (!m_partialStack.empty())
 	{
 		m_errorPartial = m_partialStack.top();
 	}
 }
 
-Tag Renderer::findTag(const QString& content, int pos, int endPos)
+Tag Renderer::findTag(const StringType& content, int pos, int endPos)
 {
-	int tagStartPos = content.indexOf(m_tagStartMarker, pos);
+	int tagStartPos = adapt(content).indexOf(m_tagStartMarker, pos);
 	if (tagStartPos == -1 || tagStartPos >= endPos) {
 		return Tag();
 	}
 
-	int tagEndPos = content.indexOf(m_tagEndMarker, tagStartPos + m_tagStartMarker.length()) + m_tagEndMarker.length();
+	int tagEndPos = adapt(content).indexOf(m_tagEndMarker, tagStartPos + m_tagStartMarker.length()) + m_tagEndMarker.length();
 	if (tagEndPos == -1) {
 		return Tag();
 	}
@@ -342,7 +366,7 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 	pos = tagStartPos + m_tagStartMarker.length();
 	endPos = tagEndPos - m_tagEndMarker.length();
 
-	QChar typeChar = content.at(pos);
+	unsigned short typeChar = adapt(content).at(pos).unicode();
 
 	if (typeChar == '#') {
 		tag.type = Tag::SectionStart;
@@ -368,8 +392,8 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 		} else if (typeChar == '{') {
 			tag.escapeMode = Tag::Raw;
 			++pos;
-			int endTache = content.indexOf('}', pos);
-			if (endTache == tag.end - m_tagEndMarker.length()) {
+			int endTache = adapt(content).indexOf('}', pos);
+			if (endTache == tag.end - adapt(m_tagEndMarker).length()) {
 				++tag.end;
 			} else {
 				endPos = endTache;
@@ -382,44 +406,44 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 	return tag;
 }
 
-QString Renderer::readTagName(const QString& content, int pos, int endPos)
+StringType Renderer::readTagName(const StringType& content, int pos, int endPos)
 {
-	QString name;
+	StringType name;
 	name.reserve(endPos - pos);
-	while (content.at(pos).isSpace()) {
+	while (adapt(content).at(pos).isSpace()) {
 		++pos;
 	}
-	while (!content.at(pos).isSpace() && pos < endPos) {
-		name += content.at(pos);
+	while (!adapt(content).at(pos).isSpace() && pos < endPos) {
+		name += adapt(content).at(pos);
 		++pos;
 	}
 	return name;
 }
 
-void Renderer::readSetDelimiter(const QString& content, int pos, int endPos)
+void Renderer::readSetDelimiter(const StringType& content, int pos, int endPos)
 {
-	QString startMarker;
-	QString endMarker;
+	StringType startMarker;
+	StringType endMarker;
 
-	while (!content.at(pos).isSpace() && pos < endPos) {
-		if (content.at(pos) == '=') {
+	while (!adapt(content).at(pos).isSpace() && pos < endPos) {
+		if (adapt(content).at(pos) == '=') {
 			setError("Custom delimiters may not contain '=' or spaces.", pos);
 			return;
 		}
-		startMarker += content.at(pos);
+		startMarker += adapt(content).at(pos);
 		++pos;
 	}
 
-	while (content.at(pos).isSpace() && pos < endPos) {
+	while (adapt(content).at(pos).isSpace() && pos < endPos) {
 		++pos;
 	}
 
 	while (pos < endPos - 1) {
-		if (content.at(pos) == '=' || content.at(pos).isSpace()) {
+		if (adapt(content).at(pos) == '=' || adapt(content).at(pos).isSpace()) {
 			setError("Custom delimiters may not contain '=' or spaces.", pos);
 			return;
 		}
-		endMarker += content.at(pos);
+		endMarker += adapt(content).at(pos);
 		++pos;
 	}
 
@@ -427,7 +451,7 @@ void Renderer::readSetDelimiter(const QString& content, int pos, int endPos)
 	m_tagEndMarker = endMarker;
 }
 
-Tag Renderer::findEndTag(const QString& content, const Tag& startTag, int endPos)
+Tag Renderer::findEndTag(const StringType& content, const Tag& startTag, int endPos)
 {
 	int tagDepth = 1;
 	int pos = startTag.end;
@@ -453,7 +477,7 @@ Tag Renderer::findEndTag(const QString& content, const Tag& startTag, int endPos
 	return Tag();
 }
 
-void Renderer::setTagMarkers(const QString& startMarker, const QString& endMarker)
+void Renderer::setTagMarkers(const StringType& startMarker, const StringType& endMarker)
 {
 	m_defaultTagStartMarker = startMarker;
 	m_defaultTagEndMarker = endMarker;

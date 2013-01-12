@@ -14,9 +14,19 @@
 
 #pragma once
 
+#include <stack>
+
+#define USE_QT
+
+#ifdef USE_QT
 #include <QtCore/QStack>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
+typedef QString StringType;
+#else
+#include <string>
+typedef std::string StringType;
+#endif
 
 namespace Mustache
 {
@@ -39,7 +49,7 @@ public:
 	/** Returns a string representation of the value for @p key in the current context.
 	  * This is used to replace a Mustache value tag.
 	  */
-	virtual QString stringValue(const QString& key) const = 0;
+	virtual StringType stringValue(const StringType& key) const = 0;
 
 	/** Returns true if the value for @p key is 'false' or an empty list.
 	  * 'False' values typically include empty strings, the boolean value false etc.
@@ -48,24 +58,24 @@ public:
 	  * is false, or for an inverted section tag, the section is only rendered if the key
 	  * is false.
 	  */
-	virtual bool isFalse(const QString& key) const = 0;
+	virtual bool isFalse(const StringType& key) const = 0;
 
 	/** Returns the number of items in the list value for @p key or 0 if
 	  * the value for @p key is not a list.
 	  */
-	virtual int listCount(const QString& key) const = 0;
+	virtual int listCount(const StringType& key) const = 0;
 
 	/** Set the current context to the value for @p key.
 	  * If index is >= 0, set the current context to the @p index'th value
 	  * in the list value for @p key.
 	  */
-	virtual void push(const QString& key, int index = -1) = 0;
+	virtual void push(const StringType& key, int index = -1) = 0;
 
 	/** Exit the current context. */
 	virtual void pop() = 0;
 
 	/** Returns the partial template for a given @p key. */
-	QString partialValue(const QString& key) const;
+	StringType partialValue(const StringType& key) const;
 
 	/** Returns the partial resolver passed to the constructor. */
 	PartialResolver* partialResolver() const;
@@ -79,19 +89,20 @@ public:
 	 *
 	 * The default implementation always returns false.
 	 */
-	virtual bool canEval(const QString& key) const;
+	virtual bool canEval(const StringType& key) const;
 
 	/** Callback used to render a template section with the given @p key.
 	 * @p renderer will substitute the original section tag with the result of eval().
 	 *
 	 * The default implementation returns an empty string.
 	 */
-	virtual QString eval(const QString& key, const QString& _template, Renderer* renderer);
+	virtual StringType eval(const StringType& key, const StringType& _template, Renderer* renderer);
 
 private:
 	PartialResolver* m_partialResolver;
 };
 
+#ifdef USE_QT
 /** A context implementation which wraps a QVariantHash or QVariantMap. */
 class QtVariantContext : public Context
 {
@@ -101,17 +112,18 @@ public:
 	 */
 	explicit QtVariantContext(const QVariant& root, PartialResolver* resolver = 0);
 
-	virtual QString stringValue(const QString& key) const;
-	virtual bool isFalse(const QString& key) const;
-	virtual int listCount(const QString& key) const;
-	virtual void push(const QString& key, int index = -1);
+	virtual StringType stringValue(const StringType& key) const;
+	virtual bool isFalse(const StringType& key) const;
+	virtual int listCount(const StringType& key) const;
+	virtual void push(const StringType& key, int index = -1);
 	virtual void pop();
 
 private:
-	QVariant value(const QString& key) const;
+	QVariant value(const StringType& key) const;
 
 	QStack<QVariant> m_contextStack;
 };
+#endif
 
 /** Interface for fetching template partials. */
 class PartialResolver
@@ -120,20 +132,21 @@ public:
 	virtual ~PartialResolver() {}
 
 	/** Returns the partial template with a given @p name. */
-	virtual QString getPartial(const QString& name) = 0;
+	virtual StringType getPartial(const StringType& name) = 0;
 };
 
+#ifdef USE_QT
 /** A simple partial fetcher which returns templates from a map of (partial name -> template)
   */
 class PartialMap : public PartialResolver
 {
 public:
-	explicit PartialMap(const QHash<QString,QString>& partials);
+	explicit PartialMap(const QHash<StringType,StringType>& partials);
 
-	virtual QString getPartial(const QString& name);
+	virtual StringType getPartial(const StringType& name);
 
 private:
-	QHash<QString, QString> m_partials;
+	QHash<StringType, StringType> m_partials;
 };
 
 /** A partial fetcher when loads templates from '<name>.mustache' files
@@ -144,14 +157,15 @@ private:
 class PartialFileLoader : public PartialResolver
 {
 public:
-	explicit PartialFileLoader(const QString& basePath);
+	explicit PartialFileLoader(const StringType& basePath);
 
-	virtual QString getPartial(const QString& name);
+	virtual StringType getPartial(const StringType& name);
 
 private:
-	QString m_basePath;
-	QHash<QString, QString> m_cache;
+	StringType m_basePath;
+	QHash<StringType, StringType> m_cache;
 };
+#endif
 
 /** Holds properties of a tag in a mustache template. */
 struct Tag
@@ -183,7 +197,7 @@ struct Tag
 	{}
 
 	Type type;
-	QString key;
+	StringType key;
 	int start;
 	int end;
 	EscapeMode escapeMode;
@@ -200,12 +214,12 @@ public:
 	/** Render a Mustache template, using @p context to fetch
 	  * the values used to replace Mustache tags.
 	  */
-	QString render(const QString& _template, Context* context);
+	StringType render(const StringType& _template, Context* context);
 
 	/** Returns a message describing the last error encountered by the previous
 	  * render() call.
 	  */
-	QString error() const;
+	StringType error() const;
 
 	/** Returns the position in the template where the last error occurred
 	  * when rendering the template or -1 if no error occurred.
@@ -218,36 +232,38 @@ public:
 	/** Returns the name of the partial where the error occurred, or an empty string
 	 * if the error occurred in the main template.
 	 */
-	QString errorPartial() const;
+	StringType errorPartial() const;
 
 	/** Sets the default tag start and end markers.
 	  * This can be overridden within a template.
 	  */
-	void setTagMarkers(const QString& startMarker, const QString& endMarker);
+	void setTagMarkers(const StringType& startMarker, const StringType& endMarker);
 
 private:
-	QString render(const QString& _template, int startPos, int endPos, Context* context);
+	StringType render(const StringType& _template, int startPos, int endPos, Context* context);
 
-	Tag findTag(const QString& content, int pos, int endPos);
-	Tag findEndTag(const QString& content, const Tag& startTag, int endPos);
-	void setError(const QString& error, int pos);
+	Tag findTag(const StringType& content, int pos, int endPos);
+	Tag findEndTag(const StringType& content, const Tag& startTag, int endPos);
+	void setError(const StringType& error, int pos);
 
-	void readSetDelimiter(const QString& content, int pos, int endPos);
-	static QString readTagName(const QString& content, int pos, int endPos);
+	void readSetDelimiter(const StringType& content, int pos, int endPos);
+	static StringType readTagName(const StringType& content, int pos, int endPos);
 
-	QStack<QString> m_partialStack;
-	QString m_error;
+	std::stack<StringType> m_partialStack;
+	StringType m_error;
 	int m_errorPos;
-	QString m_errorPartial;
+	StringType m_errorPartial;
 
-	QString m_tagStartMarker;
-	QString m_tagEndMarker;
+	StringType m_tagStartMarker;
+	StringType m_tagEndMarker;
 
-	QString m_defaultTagStartMarker;
-	QString m_defaultTagEndMarker;
+	StringType m_defaultTagStartMarker;
+	StringType m_defaultTagEndMarker;
 };
 
+#ifdef USE_QT
 /** A convenience function which renders a template using the given data. */
-QString renderTemplate(const QString& templateString, const QVariantHash& args);
+StringType renderTemplate(const StringType& templateString, const QVariantHash& args);
+#endif
 
 };

@@ -3,7 +3,6 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = 
 DEPENDPATH += . src tests
 INCLUDEPATH += . src tests
 QT += testlib

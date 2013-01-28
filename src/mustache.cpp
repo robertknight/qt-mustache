@@ -329,10 +329,11 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 		return Tag();
 	}
 
-	int tagEndPos = content.indexOf(m_tagEndMarker, tagStartPos + m_tagStartMarker.length()) + m_tagEndMarker.length();
+	int tagEndPos = content.indexOf(m_tagEndMarker, tagStartPos + m_tagStartMarker.length());
 	if (tagEndPos == -1) {
 		return Tag();
 	}
+	tagEndPos += m_tagEndMarker.length();
 
 	Tag tag;
 	tag.type = Tag::Value;
@@ -340,13 +341,7 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 	tag.end = tagEndPos;
 
 	pos = tagStartPos + m_tagStartMarker.length();
-	if (pos >= content.length()) {
-		return Tag();
-	}
 	endPos = tagEndPos - m_tagEndMarker.length();
-	if (endPos < 0) {
-		return Tag();
-	}
 
 	QChar typeChar = content.at(pos);
 

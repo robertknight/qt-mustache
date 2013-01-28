@@ -287,6 +287,21 @@ void TestMustache::testHelpers()
 	QCOMPARE(output, QString("Hello Jim Smith, you are 42"));
 }
 
+void TestMustache::testIncompleteTag()
+{
+	QVariantHash args;
+	args.insert("name", "Jim Smith");
+
+	QString output = Mustache::renderTemplate("Hello {{name}}, you are {", args);
+	QCOMPARE(output, QString("Hello Jim Smith, you are {"));
+
+	output = Mustache::renderTemplate("Hello {{name}}, you are {{", args);
+	QCOMPARE(output, QString("Hello Jim Smith, you are {{"));
+
+	output = Mustache::renderTemplate("Hello {{name}}, you are {{}", args);
+	QCOMPARE(output, QString("Hello Jim Smith, you are {{}"));
+}
+
 // Create a QCoreApplication for the test.  In Qt 5 this can be
 // done with QTEST_GUILESS_MAIN().
 int main(int argc, char** argv)

@@ -340,7 +340,13 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 	tag.end = tagEndPos;
 
 	pos = tagStartPos + m_tagStartMarker.length();
+	if (pos >= content.length()) {
+		return Tag();
+	}
 	endPos = tagEndPos - m_tagEndMarker.length();
+	if (endPos < 0) {
+		return Tag();
+	}
 
 	QChar typeChar = content.at(pos);
 

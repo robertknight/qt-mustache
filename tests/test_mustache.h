@@ -33,5 +33,6 @@ private Q_SLOTS:
 	void testEscaping();
 	void testEval();
 	void testHelpers();
+	void testIncompleteTag();
 };
 

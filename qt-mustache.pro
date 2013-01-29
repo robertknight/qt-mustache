@@ -7,6 +7,7 @@ DEPENDPATH += . src tests
 INCLUDEPATH += . src tests
 QT += testlib
 QT -= gui
+CONFIG -= app_bundle
 
 !win32 {
   QMAKE_CXXFLAGS += -Werror -Wall -Wextra -Wnon-virtual-dtor

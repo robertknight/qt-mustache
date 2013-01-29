@@ -164,6 +164,10 @@ void TestMustache::testSetDelimiters()
 	renderer.setTagMarkers("%", "%");
 	output = renderer.render("%name%'s phone number is %phone%", &context);
 	QCOMPARE(output, QString("John Smith's phone number is 01234 567890"));
+
+	renderer.setTagMarkers("{{", "}}");
+	output = renderer.render("{{== ==}}", &context);
+	QCOMPARE(renderer.error(), QString("Custom delimiters may not contain '=' or spaces."));
 }
 
 void TestMustache::testErrors()
@@ -316,6 +320,14 @@ void TestMustache::testIncompleteSection()
 	output = renderer.render("{{^list}}", &context);
 	QCOMPARE(output, QString());
 	QCOMPARE(renderer.error(), QString("No matching end tag found for inverted section"));
+
+	output = renderer.render("{{/list}}", &context);
+	QCOMPARE(output, QString());
+	QCOMPARE(renderer.error(), QString("Unexpected end tag"));
+
+	output = renderer.render("{{#list}}{{/foo}}", &context);
+	QCOMPARE(output, QString());
+	QCOMPARE(renderer.error(), QString("Tag start/end key mismatch"));
 }
 
 // Create a QCoreApplication for the test.  In Qt 5 this can be

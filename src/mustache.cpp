@@ -214,6 +214,10 @@ QString Renderer::errorPartial() const
 
 QString Renderer::render(const QString& _template, Context* context)
 {
+	m_error.clear();
+	m_errorPos = -1;
+	m_errorPartial.clear();
+
 	m_tagStartMarker = m_defaultTagStartMarker;
 	m_tagEndMarker = m_defaultTagEndMarker;
 
@@ -222,8 +226,6 @@ QString Renderer::render(const QString& _template, Context* context)
 
 QString Renderer::render(const QString& _template, int startPos, int endPos, Context* context)
 {
-	setError(QString(), -1);
-
 	QString output;
 	int lastTagEnd = startPos;
 
@@ -251,7 +253,9 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 		{
 			Tag endTag = findEndTag(_template, tag, endPos);
 			if (endTag.type == Tag::Null) {
-				setError("No matching end tag found for section", tag.start);
+				if (m_errorPos == -1) {
+					setError("No matching end tag found for section", tag.start);
+				}
 			} else {
 				int listCount = context->listCount(tag.key);
 				if (listCount > 0) {
@@ -275,7 +279,9 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 		{
 			Tag endTag = findEndTag(_template, tag, endPos);
 			if (endTag.type == Tag::Null) {
-				setError("No matching end tag found for inverted section", tag.start);
+				if (m_errorPos == -1) {
+					setError("No matching end tag found for inverted section", tag.start);
+				}
 			} else {
 				if (context->isFalse(tag.key)) {
 					output += render(_template, tag.end, endTag.start, context);
@@ -315,6 +321,9 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 
 void Renderer::setError(const QString& error, int pos)
 {
+	Q_ASSERT(!error.isEmpty());
+	Q_ASSERT(pos >= 0);
+
 	m_error = error;
 	m_errorPos = pos;
 
@@ -446,6 +455,7 @@ Tag Renderer::findEndTag(const QString& content, const Tag& startTag, int endPos
 			if (tagDepth == 0) {
 				if (nextTag.key != startTag.key) {
 					setError("Tag start/end key mismatch", nextTag.start);
+					return Tag();
 				}
 				return nextTag;
 			}

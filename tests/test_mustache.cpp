@@ -302,6 +302,22 @@ void TestMustache::testIncompleteTag()
 	QCOMPARE(output, QString("Hello Jim Smith, you are {{}"));
 }
 
+void TestMustache::testIncompleteSection()
+{
+	QVariantHash args;
+	args.insert("list", QVariantList() << QVariantHash());
+
+	Mustache::Renderer renderer;
+	Mustache::QtVariantContext context(args);
+	QString output = renderer.render("{{#list}}", &context);
+	QCOMPARE(output, QString());
+	QCOMPARE(renderer.error(), QString("No matching end tag found for section"));
+
+	output = renderer.render("{{^list}}", &context);
+	QCOMPARE(output, QString());
+	QCOMPARE(renderer.error(), QString("No matching end tag found for inverted section"));
+}
+
 // Create a QCoreApplication for the test.  In Qt 5 this can be
 // done with QTEST_GUILESS_MAIN().
 int main(int argc, char** argv)

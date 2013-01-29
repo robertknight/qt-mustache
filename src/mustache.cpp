@@ -252,22 +252,23 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 			Tag endTag = findEndTag(_template, tag, endPos);
 			if (endTag.type == Tag::Null) {
 				setError("No matching end tag found for section", tag.start);
-			}
-			int listCount = context->listCount(tag.key);
-			if (listCount > 0) {
-				for (int i=0; i < listCount; i++) {
-					context->push(tag.key, i);
+			} else {
+				int listCount = context->listCount(tag.key);
+				if (listCount > 0) {
+					for (int i=0; i < listCount; i++) {
+						context->push(tag.key, i);
+						output += render(_template, tag.end, endTag.start, context);
+						context->pop();
+					}
+				} else if (context->canEval(tag.key)) {
+					output += context->eval(tag.key, _template.mid(tag.end, endTag.start - tag.end), this);
+				} else if (!context->isFalse(tag.key)) {
+					context->push(tag.key);
 					output += render(_template, tag.end, endTag.start, context);
 					context->pop();
 				}
-			} else if (context->canEval(tag.key)) {
-				output += context->eval(tag.key, _template.mid(tag.end, endTag.start - tag.end), this);
-			} else if (!context->isFalse(tag.key)) {
-				context->push(tag.key);
-				output += render(_template, tag.end, endTag.start, context);
-				context->pop();
+				lastTagEnd = endTag.end;
 			}
-			lastTagEnd = endTag.end;
 		}
 		break;
 		case Tag::InvertedSectionStart:
@@ -275,11 +276,12 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 			Tag endTag = findEndTag(_template, tag, endPos);
 			if (endTag.type == Tag::Null) {
 				setError("No matching end tag found for inverted section", tag.start);
+			} else {
+				if (context->isFalse(tag.key)) {
+					output += render(_template, tag.end, endTag.start, context);
+				}
+				lastTagEnd = endTag.end;
 			}
-			if (context->isFalse(tag.key)) {
-				output += render(_template, tag.end, endTag.start, context);
-			}
-			lastTagEnd = endTag.end;
 		}
 		break;
 		case Tag::SectionEnd:

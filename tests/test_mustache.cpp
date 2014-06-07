@@ -330,6 +330,20 @@ void TestMustache::testIncompleteSection()
 	QCOMPARE(renderer.error(), QString("Tag start/end key mismatch"));
 }
 
+static QString decorate(const QString& text, Mustache::Renderer* r, Mustache::Context* ctx)
+{
+	return "~" + r->render(text, ctx) + "~";
+}
+
+void TestMustache::testLambda()
+{
+	QVariantHash args;
+	args["text"] = "test";
+	args["fn"] = QVariant::fromValue(Mustache::QtVariantContext::fn_t(decorate));
+	QString output = Mustache::renderTemplate("{{#fn}}{{text}}{{/fn}}", args);
+	QCOMPARE(output, QString("~test~"));
+}
+
 // Create a QCoreApplication for the test.  In Qt 5 this can be
 // done with QTEST_GUILESS_MAIN().
 int main(int argc, char** argv)

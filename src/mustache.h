@@ -18,6 +18,10 @@
 #include <QtCore/QString>
 #include <QtCore/QVariant>
 
+#if __cplusplus >= 201103L
+#include <functional> /* for std::function */
+#endif
+
 namespace Mustache
 {
 
@@ -99,6 +103,11 @@ public:
 	/** Construct a QtVariantContext which wraps a dictionary in a QVariantHash
 	 * or a QVariantMap.
 	 */
+#if __cplusplus >= 201103L
+	typedef std::function<QString(const QString&, Mustache::Renderer*, Mustache::Context*)> fn_t;
+#else
+	typedef QString (*fn_t)(const QString&, Mustache::Renderer*, Mustache::Context*);
+#endif
 	explicit QtVariantContext(const QVariant& root, PartialResolver* resolver = 0);
 
 	virtual QString stringValue(const QString& key) const;
@@ -106,6 +115,8 @@ public:
 	virtual int listCount(const QString& key) const;
 	virtual void push(const QString& key, int index = -1);
 	virtual void pop();
+	virtual bool canEval(const QString& key) const;
+	virtual QString eval(const QString& key, const QString& _template, Mustache::Renderer* renderer);
 
 private:
 	QVariant value(const QString& key) const;
@@ -251,3 +262,5 @@ private:
 QString renderTemplate(const QString& templateString, const QVariantHash& args);
 
 };
+
+Q_DECLARE_METATYPE(Mustache::QtVariantContext::fn_t)

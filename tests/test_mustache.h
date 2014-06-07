@@ -35,5 +35,6 @@ private Q_SLOTS:
 	void testHelpers();
 	void testIncompleteTag();
 	void testIncompleteSection();
+	void testLambda();
 };
 

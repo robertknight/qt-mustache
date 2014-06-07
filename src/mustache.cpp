@@ -164,6 +164,20 @@ int QtVariantContext::listCount(const QString& key) const
 	return 0;
 }
 
+bool QtVariantContext::canEval(const QString& key) const
+{
+	return value(key).canConvert<fn_t>();
+}
+
+QString QtVariantContext::eval(const QString& key, const QString& _template, Renderer* renderer)
+{
+	QVariant fn = value(key);
+	if (fn.isNull()) {
+		return QString();
+	}
+	return fn.value<fn_t>()(_template, renderer, this);
+}
+
 PartialMap::PartialMap(const QHash<QString, QString>& partials)
 	: m_partials(partials)
 {}

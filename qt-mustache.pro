@@ -35,3 +35,4 @@ defineTest(copyToDestdir) {
 }
 
 copyToDestdir($$PWD/tests/*.mustache)
+copyToDestdir($$PWD/tests/specs/*.json)

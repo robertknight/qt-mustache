@@ -372,10 +372,7 @@ void TestMustache::testConformance_data()
 
     foreach (const QString &fileName, specsDir.entryList(QStringList() << "*.json")) {
         QFile file(specsDir.filePath(fileName));
-        if (!file.open(QIODevice::ReadOnly)) {
-            qWarning() << qPrintable(fileName + ":" + file.errorString());
-            continue;
-        }
+        QVERIFY2(file.open(QIODevice::ReadOnly), qPrintable(fileName + ": " + file.errorString()));
 
         QJsonDocument document = QJsonDocument::fromJson(file.readAll());
         QJsonArray testCaseValues = document.object()["tests"].toArray();

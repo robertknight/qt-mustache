@@ -398,6 +398,12 @@ void TestMustache::testConformance_data()
     }
 }
 
+/*
+ * This test will run once for each test case defined in version 1.1.2 of the
+ * Mustache specification [1].
+ *
+ * [1] https://github.com/mustache/spec/tree/v1.1.2/specs
+ */
 void TestMustache::testConformance()
 {
     QFETCH(QVariantMap, data);

@@ -182,7 +182,7 @@ void TestMustache::testSetDelimiters()
 
 	renderer.setTagMarkers("{{", "}}");
 	output = renderer.render("{{== ==}}", &context);
-	QCOMPARE(renderer.error(), QString("Custom delimiters may not contain '=' or spaces."));
+	QCOMPARE(renderer.error(), QString("Custom delimiters may not contain '='."));
 }
 
 void TestMustache::testErrors()
@@ -431,7 +431,6 @@ void TestMustache::testConformance()
 	QEXPECT_FAIL("delimiters.json - Standalone Line Endings", "TODO", Abort);
 	QEXPECT_FAIL("delimiters.json - Standalone Without Previous Line", "TODO", Abort);
 	QEXPECT_FAIL("delimiters.json - Standalone Without Newline", "TODO", Abort);
-	QEXPECT_FAIL("delimiters.json - Pair with Padding", "TODO", Abort);
 	QEXPECT_FAIL("interpolation.json - Dotted Names - Basic Interpolation", "TODO", Abort);
 	QEXPECT_FAIL("interpolation.json - Dotted Names - Triple Mustache Interpolation", "TODO", Abort);
 	QEXPECT_FAIL("interpolation.json - Dotted Names - Ampersand Interpolation", "TODO", Abort);

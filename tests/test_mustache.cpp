@@ -14,6 +14,21 @@
 
 #include "test_mustache.h"
 
+#include <QDir>
+#include <QFile>
+#include <QHash>
+#include <QString>
+
+#if QT_VERSION >= 0x050000
+    #include <QJsonDocument>
+    #include <QJsonObject>
+    #include <QJsonArray>
+#endif // QT_VERSION >= 0x050000
+
+// To be able to use QHash<QString, QString> in QFETCH(..).
+typedef QHash<QString, QString> PartialsHash;
+Q_DECLARE_METATYPE(PartialsHash)
+
 void TestMustache::testValues()
 {
 	QVariantHash map;
@@ -343,6 +358,126 @@ void TestMustache::testLambda()
 	QString output = Mustache::renderTemplate("{{#fn}}{{text}}{{/fn}}", args);
 	QCOMPARE(output, QString("~test~"));
 }
+
+#if QT_VERSION >= 0x050000 // JSON classes only in Qt 5+.
+
+void TestMustache::testConformance_data()
+{
+	QTest::addColumn<QVariantMap>("data");
+	QTest::addColumn<QString>("template_");
+	QTest::addColumn<QHash<QString, QString> >("partials");
+	QTest::addColumn<QString>("expected");
+
+	QDir specsDir = QDir(".");
+
+	foreach (const QString &fileName, specsDir.entryList(QStringList() << "*.json")) {
+		QFile file(specsDir.filePath(fileName));
+		QVERIFY2(file.open(QIODevice::ReadOnly), qPrintable(fileName + ": " + file.errorString()));
+
+		QJsonDocument document = QJsonDocument::fromJson(file.readAll());
+		QJsonArray testCaseValues = document.object()["tests"].toArray();
+
+		foreach (const QJsonValue &testCaseValue, testCaseValues) {
+			QJsonObject testCaseObject = testCaseValue.toObject();
+
+			QString name = fileName + " - " + testCaseObject["name"].toString();
+			QVariantMap data = testCaseObject["data"].toObject().toVariantMap();
+			QString template_ = testCaseObject["template"].toString();
+			QJsonObject partialsObject = testCaseObject["partials"].toObject();
+			PartialsHash partials;
+			foreach (const QString &partialName, partialsObject.keys()) {
+				partials.insert(partialName, partialsObject[partialName].toString());
+			}
+			QString expected = testCaseObject["expected"].toString();
+
+			QTest::newRow(qPrintable(name)) << data << template_ << partials << expected;
+		}
+	}
+}
+
+/*
+ * This test will run once for each test case defined in version 1.1.2 of the
+ * Mustache specification [1].
+ *
+ * [1] https://github.com/mustache/spec/tree/v1.1.2/specs
+ */
+void TestMustache::testConformance()
+{
+	QFETCH(QVariantMap, data);
+	QFETCH(QString, template_);
+	QFETCH(PartialsHash, partials);
+	QFETCH(QString, expected);
+
+	Mustache::Renderer renderer;
+	Mustache::PartialMap partialsMap(partials);
+	Mustache::QtVariantContext context(data, &partialsMap);
+
+	QString output = renderer.render(template_, &context);
+
+	// We currently fails these spec tests :(
+	QEXPECT_FAIL("comments.json - Standalone", "TODO", Abort);
+	QEXPECT_FAIL("comments.json - Indented Standalone", "TODO", Abort);
+	QEXPECT_FAIL("comments.json - Standalone Line Endings", "TODO", Abort);
+	QEXPECT_FAIL("comments.json - Standalone Without Previous Line", "TODO", Abort);
+	QEXPECT_FAIL("comments.json - Standalone Without Newline", "TODO", Abort);
+	QEXPECT_FAIL("comments.json - Multiline Standalone", "TODO", Abort);
+	QEXPECT_FAIL("comments.json - Indented Multiline Standalone", "TODO", Abort);
+	QEXPECT_FAIL("delimiters.json - Sections", "TODO", Abort);
+	QEXPECT_FAIL("delimiters.json - Inverted Sections", "TODO", Abort);
+	QEXPECT_FAIL("delimiters.json - Partial Inheritence", "TODO", Abort);
+	QEXPECT_FAIL("delimiters.json - Post-Partial Behavior", "TODO", Abort);
+	QEXPECT_FAIL("delimiters.json - Standalone Tag", "TODO", Abort);
+	QEXPECT_FAIL("delimiters.json - Indented Standalone Tag", "TODO", Abort);
+	QEXPECT_FAIL("delimiters.json - Standalone Line Endings", "TODO", Abort);
+	QEXPECT_FAIL("delimiters.json - Standalone Without Previous Line", "TODO", Abort);
+	QEXPECT_FAIL("delimiters.json - Standalone Without Newline", "TODO", Abort);
+	QEXPECT_FAIL("delimiters.json - Pair with Padding", "TODO", Abort);
+	QEXPECT_FAIL("interpolation.json - Dotted Names - Basic Interpolation", "TODO", Abort);
+	QEXPECT_FAIL("interpolation.json - Dotted Names - Triple Mustache Interpolation", "TODO", Abort);
+	QEXPECT_FAIL("interpolation.json - Dotted Names - Ampersand Interpolation", "TODO", Abort);
+	QEXPECT_FAIL("interpolation.json - Dotted Names - Arbitrary Depth", "TODO", Abort);
+	QEXPECT_FAIL("interpolation.json - Dotted Names - Initial Resolution", "TODO", Abort);
+	QEXPECT_FAIL("inverted.json - Context", "TODO", Abort);
+	QEXPECT_FAIL("inverted.json - Doubled", "TODO", Abort);
+	QEXPECT_FAIL("inverted.json - Dotted Names - Truthy", "TODO", Abort);
+	QEXPECT_FAIL("inverted.json - Standalone Lines", "TODO", Abort);
+	QEXPECT_FAIL("inverted.json - Standalone Indented Lines", "TODO", Abort);
+	QEXPECT_FAIL("inverted.json - Standalone Line Endings", "TODO", Abort);
+	QEXPECT_FAIL("inverted.json - Standalone Without Previous Line", "TODO", Abort);
+	QEXPECT_FAIL("inverted.json - Standalone Without Newline", "TODO", Abort);
+	QEXPECT_FAIL("partials.json - Standalone Line Endings", "TODO", Abort);
+	QEXPECT_FAIL("partials.json - Standalone Without Previous Line", "TODO", Abort);
+	QEXPECT_FAIL("partials.json - Standalone Without Newline", "TODO", Abort);
+	QEXPECT_FAIL("partials.json - Standalone Indentation", "TODO", Abort);
+	QEXPECT_FAIL("sections.json - Context", "TODO", Abort);
+	QEXPECT_FAIL("sections.json - Deeply Nested Contexts", "TODO", Abort);
+	QEXPECT_FAIL("sections.json - Doubled", "TODO", Abort);
+	QEXPECT_FAIL("sections.json - Implicit Iterator - String", "TODO", Abort);
+	QEXPECT_FAIL("sections.json - Implicit Iterator - Integer", "TODO", Abort);
+	QEXPECT_FAIL("sections.json - Implicit Iterator - Decimal", "TODO", Abort);
+	QEXPECT_FAIL("sections.json - Dotted Names - Truthy", "TODO", Abort);
+	QEXPECT_FAIL("sections.json - Standalone Lines", "TODO", Abort);
+	QEXPECT_FAIL("sections.json - Indented Standalone Lines", "TODO", Abort);
+	QEXPECT_FAIL("sections.json - Standalone Line Endings", "TODO", Abort);
+	QEXPECT_FAIL("sections.json - Standalone Without Previous Line", "TODO", Abort);
+	QEXPECT_FAIL("sections.json - Standalone Without Newline", "TODO", Abort);
+
+	// Not applicable: Only ruby/perl/js/php/python/clojure available in spec.
+	QEXPECT_FAIL("~lambdas.json - Interpolation", "Expected failure", Abort);
+	QEXPECT_FAIL("~lambdas.json - Interpolation - Expansion", "Expected failure", Abort);
+	QEXPECT_FAIL("~lambdas.json - Interpolation - Alternate Delimiters", "Expected failure", Abort);
+	QEXPECT_FAIL("~lambdas.json - Interpolation - Multiple Calls", "Expected failure", Abort);
+	QEXPECT_FAIL("~lambdas.json - Escaping", "Expected failure", Abort);
+	QEXPECT_FAIL("~lambdas.json - Section", "Expected failure", Abort);
+	QEXPECT_FAIL("~lambdas.json - Section - Expansion", "Expected failure", Abort);
+	QEXPECT_FAIL("~lambdas.json - Section - Alternate Delimiters", "Expected failure", Abort);
+	QEXPECT_FAIL("~lambdas.json - Section - Multiple Calls", "Expected failure", Abort);
+	QEXPECT_FAIL("~lambdas.json - Inverted Section", "Expected failure", Abort);
+
+	QCOMPARE(output, expected);
+}
+
+#endif // QT_VERSION >= 0x050000
 
 // Create a QCoreApplication for the test.  In Qt 5 this can be
 // done with QTEST_GUILESS_MAIN().

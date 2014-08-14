@@ -36,5 +36,9 @@ private Q_SLOTS:
 	void testIncompleteTag();
 	void testIncompleteSection();
 	void testLambda();
+#if QT_VERSION >= 0x050000
+	void testConformance();
+	void testConformance_data();
+#endif // QT_VERSION >= 0x050000
 };
 

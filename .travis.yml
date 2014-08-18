@@ -1,14 +1,13 @@
 language: cpp
 
 env:
- - QT=qt4
- - QT=qt5
+ - QT_VERSION=4
+ - QT_VERSION=5
 
 before_install:
  - sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
  - sudo apt-get update -qq
  - sudo apt-get install -qq libqtcore4 qt4-qmake libqt5core5 qt5-qmake qtchooser
- - qtchooser -qt=$QT
 
 script:
- - qmake && make && ./qt-mustache
+ - qmake -qt=$QT_VERSION && make && ./qt-mustache

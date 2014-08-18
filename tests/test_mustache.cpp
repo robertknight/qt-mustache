@@ -425,7 +425,6 @@ void TestMustache::testConformance()
 	QEXPECT_FAIL("delimiters.json - Sections", "TODO", Abort);
 	QEXPECT_FAIL("delimiters.json - Inverted Sections", "TODO", Abort);
 	QEXPECT_FAIL("delimiters.json - Partial Inheritence", "TODO", Abort);
-	QEXPECT_FAIL("delimiters.json - Post-Partial Behavior", "TODO", Abort);
 	QEXPECT_FAIL("delimiters.json - Standalone Tag", "TODO", Abort);
 	QEXPECT_FAIL("delimiters.json - Indented Standalone Tag", "TODO", Abort);
 	QEXPECT_FAIL("delimiters.json - Standalone Line Endings", "TODO", Abort);
@@ -436,7 +435,6 @@ void TestMustache::testConformance()
 	QEXPECT_FAIL("interpolation.json - Dotted Names - Ampersand Interpolation", "TODO", Abort);
 	QEXPECT_FAIL("interpolation.json - Dotted Names - Arbitrary Depth", "TODO", Abort);
 	QEXPECT_FAIL("interpolation.json - Dotted Names - Initial Resolution", "TODO", Abort);
-	QEXPECT_FAIL("inverted.json - Context", "TODO", Abort);
 	QEXPECT_FAIL("inverted.json - Doubled", "TODO", Abort);
 	QEXPECT_FAIL("inverted.json - Dotted Names - Truthy", "TODO", Abort);
 	QEXPECT_FAIL("inverted.json - Standalone Lines", "TODO", Abort);
@@ -448,7 +446,6 @@ void TestMustache::testConformance()
 	QEXPECT_FAIL("partials.json - Standalone Without Previous Line", "TODO", Abort);
 	QEXPECT_FAIL("partials.json - Standalone Without Newline", "TODO", Abort);
 	QEXPECT_FAIL("partials.json - Standalone Indentation", "TODO", Abort);
-	QEXPECT_FAIL("sections.json - Context", "TODO", Abort);
 	QEXPECT_FAIL("sections.json - Deeply Nested Contexts", "TODO", Abort);
 	QEXPECT_FAIL("sections.json - Doubled", "TODO", Abort);
 	QEXPECT_FAIL("sections.json - Implicit Iterator - String", "TODO", Abort);

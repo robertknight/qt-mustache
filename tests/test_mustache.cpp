@@ -425,7 +425,6 @@ void TestMustache::testConformance()
 	QEXPECT_FAIL("delimiters.json - Sections", "TODO", Abort);
 	QEXPECT_FAIL("delimiters.json - Inverted Sections", "TODO", Abort);
 	QEXPECT_FAIL("delimiters.json - Partial Inheritence", "TODO", Abort);
-	QEXPECT_FAIL("delimiters.json - Post-Partial Behavior", "TODO", Abort);
 	QEXPECT_FAIL("delimiters.json - Standalone Tag", "TODO", Abort);
 	QEXPECT_FAIL("delimiters.json - Indented Standalone Tag", "TODO", Abort);
 	QEXPECT_FAIL("delimiters.json - Standalone Line Endings", "TODO", Abort);

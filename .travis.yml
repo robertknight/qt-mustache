@@ -1,12 +1,8 @@
 language: cpp
 
-compiler:
- - gcc
- - clang
-
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install libqtcore4 qt4-qmake
 
 script:
- - qmake -spec linux-$CC && make && ./qt-mustache
+ - qmake && make && ./qt-mustache

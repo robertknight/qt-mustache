@@ -317,6 +317,9 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 			QString tagStartMarker = m_tagStartMarker;
 			QString tagEndMarker = m_tagEndMarker;
 
+			m_tagStartMarker = m_defaultTagStartMarker;
+			m_tagEndMarker = m_defaultTagEndMarker;
+
 			m_partialStack.push(tag.key);
 
 			QString partial = context->partialValue(tag.key);

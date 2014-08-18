@@ -461,18 +461,6 @@ void TestMustache::testConformance()
 	QEXPECT_FAIL("sections.json - Standalone Without Previous Line", "TODO", Abort);
 	QEXPECT_FAIL("sections.json - Standalone Without Newline", "TODO", Abort);
 
-	// Not applicable: Only ruby/perl/js/php/python/clojure available in spec.
-	QEXPECT_FAIL("~lambdas.json - Interpolation", "Expected failure", Abort);
-	QEXPECT_FAIL("~lambdas.json - Interpolation - Expansion", "Expected failure", Abort);
-	QEXPECT_FAIL("~lambdas.json - Interpolation - Alternate Delimiters", "Expected failure", Abort);
-	QEXPECT_FAIL("~lambdas.json - Interpolation - Multiple Calls", "Expected failure", Abort);
-	QEXPECT_FAIL("~lambdas.json - Escaping", "Expected failure", Abort);
-	QEXPECT_FAIL("~lambdas.json - Section", "Expected failure", Abort);
-	QEXPECT_FAIL("~lambdas.json - Section - Expansion", "Expected failure", Abort);
-	QEXPECT_FAIL("~lambdas.json - Section - Alternate Delimiters", "Expected failure", Abort);
-	QEXPECT_FAIL("~lambdas.json - Section - Multiple Calls", "Expected failure", Abort);
-	QEXPECT_FAIL("~lambdas.json - Inverted Section", "Expected failure", Abort);
-
 	QCOMPARE(output, expected);
 }
 

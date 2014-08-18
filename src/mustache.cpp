@@ -127,6 +127,10 @@ bool QtVariantContext::isFalse(const QString& key) const
 		return !value.toBool();
 	case QVariant::List:
 		return value.toList().isEmpty();
+	case QVariant::Hash:
+		return value.toHash().isEmpty();
+	case QVariant::Map:
+		return value.toMap().isEmpty();
 	default:
 		return value.toString().isEmpty();
 	}

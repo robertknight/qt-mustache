@@ -427,9 +427,13 @@ void Renderer::readSetDelimiter(const QString& content, int pos, int endPos)
 	QString startMarker;
 	QString endMarker;
 
+	while (content.at(pos).isSpace() && pos < endPos) {
+		++pos;
+	}
+
 	while (!content.at(pos).isSpace() && pos < endPos) {
 		if (content.at(pos) == '=') {
-			setError("Custom delimiters may not contain '=' or spaces.", pos);
+			setError("Custom delimiters may not contain '='.", pos);
 			return;
 		}
 		startMarker += content.at(pos);
@@ -440,9 +444,9 @@ void Renderer::readSetDelimiter(const QString& content, int pos, int endPos)
 		++pos;
 	}
 
-	while (pos < endPos - 1) {
-		if (content.at(pos) == '=' || content.at(pos).isSpace()) {
-			setError("Custom delimiters may not contain '=' or spaces.", pos);
+	while (!content.at(pos).isSpace() && pos < endPos - 1) {
+		if (content.at(pos) == '=') {
+			setError("Custom delimiters may not contain '='.", pos);
 			return;
 		}
 		endMarker += content.at(pos);

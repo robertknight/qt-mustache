@@ -9,4 +9,4 @@ before_install:
  - sudo apt-get install libqtcore4 qt4-qmake
 
 script:
- - qmake && make && ./qt-mustache
+ - qmake -spec linux-$CC && make && ./qt-mustache

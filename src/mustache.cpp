@@ -310,6 +310,9 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 			break;
 		case Tag::Partial:
 		{
+			QString tagStartMarker = m_tagStartMarker;
+			QString tagEndMarker = m_tagEndMarker;
+
 			m_partialStack.push(tag.key);
 
 			QString partial = context->partialValue(tag.key);
@@ -317,6 +320,9 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 			lastTagEnd = tag.end;
 
 			m_partialStack.pop();
+
+			m_tagStartMarker = tagStartMarker;
+			m_tagEndMarker = tagEndMarker;
 		}
 		break;
 		case Tag::SetDelimiter:

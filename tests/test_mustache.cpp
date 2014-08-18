@@ -436,7 +436,6 @@ void TestMustache::testConformance()
 	QEXPECT_FAIL("interpolation.json - Dotted Names - Ampersand Interpolation", "TODO", Abort);
 	QEXPECT_FAIL("interpolation.json - Dotted Names - Arbitrary Depth", "TODO", Abort);
 	QEXPECT_FAIL("interpolation.json - Dotted Names - Initial Resolution", "TODO", Abort);
-	QEXPECT_FAIL("inverted.json - Context", "TODO", Abort);
 	QEXPECT_FAIL("inverted.json - Doubled", "TODO", Abort);
 	QEXPECT_FAIL("inverted.json - Dotted Names - Truthy", "TODO", Abort);
 	QEXPECT_FAIL("inverted.json - Standalone Lines", "TODO", Abort);
@@ -448,7 +447,6 @@ void TestMustache::testConformance()
 	QEXPECT_FAIL("partials.json - Standalone Without Previous Line", "TODO", Abort);
 	QEXPECT_FAIL("partials.json - Standalone Without Newline", "TODO", Abort);
 	QEXPECT_FAIL("partials.json - Standalone Indentation", "TODO", Abort);
-	QEXPECT_FAIL("sections.json - Context", "TODO", Abort);
 	QEXPECT_FAIL("sections.json - Deeply Nested Contexts", "TODO", Abort);
 	QEXPECT_FAIL("sections.json - Doubled", "TODO", Abort);
 	QEXPECT_FAIL("sections.json - Implicit Iterator - String", "TODO", Abort);
@@ -471,7 +469,6 @@ void TestMustache::testConformance()
 	QEXPECT_FAIL("~lambdas.json - Section - Expansion", "Expected failure", Abort);
 	QEXPECT_FAIL("~lambdas.json - Section - Alternate Delimiters", "Expected failure", Abort);
 	QEXPECT_FAIL("~lambdas.json - Section - Multiple Calls", "Expected failure", Abort);
-	QEXPECT_FAIL("~lambdas.json - Inverted Section", "Expected failure", Abort);
 
 	QCOMPARE(output, expected);
 }

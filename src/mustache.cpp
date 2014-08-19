@@ -507,7 +507,7 @@ void Renderer::setTagMarkers(const QString& startMarker, const QString& endMarke
 	m_defaultTagEndMarker = endMarker;
 }
 
-void Renderer::expandTag(Tag &tag, const QString &content) const
+void Renderer::expandTag(Tag &tag, const QString &content)
 {
 	int start = tag.start;
 	int end = tag.end;

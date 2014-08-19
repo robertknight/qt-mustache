@@ -254,7 +254,7 @@ private:
 	 *
 	 * A tag is standalone if it is the only non-whitespace token on the the line.
 	 */
-	void expandTag(Tag& tag, const QString &content) const;
+	static void expandTag(Tag& tag, const QString &content);
 
 	QStack<QString> m_partialStack;
 	QString m_error;

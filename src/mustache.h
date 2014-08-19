@@ -246,10 +246,10 @@ private:
 	void readSetDelimiter(const QString& content, int pos, int endPos);
 	static QString readTagName(const QString& content, int pos, int endPos);
 
-	/** Expands @a tag to fill the line, but only if it is standalone.
+	/** Expands @p tag to fill the line, but only if it is standalone.
 	 *
 	 * The start position is moved to the beginning of the line. The end position is
-	 * moved to one past the end of the line. If @a tag is not standalone, it is
+	 * moved to one past the end of the line. If @p tag is not standalone, it is
 	 * left unmodified.
 	 *
 	 * A tag is standalone if it is the only non-whitespace token on the the line.

@@ -421,9 +421,6 @@ void TestMustache::testConformance()
 	QEXPECT_FAIL("interpolation.json - Dotted Names - Arbitrary Depth", "TODO", Abort);
 	QEXPECT_FAIL("interpolation.json - Dotted Names - Initial Resolution", "TODO", Abort);
 	QEXPECT_FAIL("inverted.json - Dotted Names - Truthy", "TODO", Abort);
-	QEXPECT_FAIL("partials.json - Standalone Without Previous Line", "TODO", Abort);
-	QEXPECT_FAIL("partials.json - Standalone Without Newline", "TODO", Abort);
-	QEXPECT_FAIL("partials.json - Standalone Indentation", "TODO", Abort);
 	QEXPECT_FAIL("sections.json - Implicit Iterator - String", "TODO", Abort);
 	QEXPECT_FAIL("sections.json - Implicit Iterator - Integer", "TODO", Abort);
 	QEXPECT_FAIL("sections.json - Implicit Iterator - Decimal", "TODO", Abort);

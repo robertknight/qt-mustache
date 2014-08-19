@@ -386,26 +386,20 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 	if (typeChar == '#') {
 		tag.type = Tag::SectionStart;
 		tag.key = readTagName(content, pos+1, endPos);
-		expandTag(tag, content);
 	} else if (typeChar == '^') {
 		tag.type = Tag::InvertedSectionStart;
 		tag.key = readTagName(content, pos+1, endPos);
-		expandTag(tag, content);
 	} else if (typeChar == '/') {
 		tag.type = Tag::SectionEnd;
 		tag.key = readTagName(content, pos+1, endPos);
-		expandTag(tag, content);
 	} else if (typeChar == '!') {
 		tag.type = Tag::Comment;
-		expandTag(tag, content);
 	} else if (typeChar == '>') {
 		tag.type = Tag::Partial;
 		tag.key = readTagName(content, pos+1, endPos);
-		expandTag(tag, content);
 	} else if (typeChar == '=') {
 		tag.type = Tag::SetDelimiter;
 		readSetDelimiter(content, pos+1, tagEndPos - m_tagEndMarker.length());
-		expandTag(tag, content);
 	} else {
 		if (typeChar == '&') {
 			tag.escapeMode = Tag::Unescape;
@@ -422,6 +416,10 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 		}
 		tag.type = Tag::Value;
 		tag.key = readTagName(content, pos, endPos);
+	}
+
+	if (tag.type != Tag::Value) {
+		expandTag(tag, content);
 	}
 
 	return tag;

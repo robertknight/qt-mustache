@@ -386,20 +386,26 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 	if (typeChar == '#') {
 		tag.type = Tag::SectionStart;
 		tag.key = readTagName(content, pos+1, endPos);
+		expandTag(tag, content);
 	} else if (typeChar == '^') {
 		tag.type = Tag::InvertedSectionStart;
 		tag.key = readTagName(content, pos+1, endPos);
+		expandTag(tag, content);
 	} else if (typeChar == '/') {
 		tag.type = Tag::SectionEnd;
 		tag.key = readTagName(content, pos+1, endPos);
+		expandTag(tag, content);
 	} else if (typeChar == '!') {
 		tag.type = Tag::Comment;
+		expandTag(tag, content);
 	} else if (typeChar == '>') {
 		tag.type = Tag::Partial;
 		tag.key = readTagName(content, pos+1, endPos);
+		expandTag(tag, content);
 	} else if (typeChar == '=') {
 		tag.type = Tag::SetDelimiter;
 		readSetDelimiter(content, pos+1, tagEndPos - m_tagEndMarker.length());
+		expandTag(tag, content);
 	} else {
 		if (typeChar == '&') {
 			tag.escapeMode = Tag::Unescape;
@@ -503,3 +509,27 @@ void Renderer::setTagMarkers(const QString& startMarker, const QString& endMarke
 	m_defaultTagEndMarker = endMarker;
 }
 
+void Renderer::expandTag(Tag &tag, const QString &content) const
+{
+	int start = tag.start;
+	int end = tag.end;
+
+	// Move start to beginning of line.
+	while (start > 0 && content.at(start - 1) != QLatin1Char('\n')) {
+		--start;
+		if (!content.at(start).isSpace()) {
+			return; // Not standalone.
+		}
+	}
+
+	// Move end to one past end of line.
+	while (end <= content.size() && content.at(end - 1) != QLatin1Char('\n')) {
+		if (end < content.size() && !content.at(end).isSpace()) {
+			return; // Not standalone.
+		}
+		++end;
+	}
+
+	tag.start = start;
+	tag.end = end;
+}

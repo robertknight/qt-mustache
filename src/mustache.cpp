@@ -16,6 +16,7 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
+#include <QtCore/QRegExp>
 #include <QtCore/QTextStream>
 
 using namespace Mustache;
@@ -208,6 +209,8 @@ QString PartialFileLoader::getPartial(const QString& name)
 	return m_cache.value(name);
 }
 
+const QRegExp Renderer::LINE_SEP("(\n|^)(.)");
+
 Renderer::Renderer()
 	: m_errorPos(-1)
 	, m_defaultTagStartMarker("{{")
@@ -323,6 +326,7 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 			m_partialStack.push(tag.key);
 
 			QString partial = context->partialValue(tag.key);
+			partial.replace(LINE_SEP, "\\1" + m_indent + "\\2");
 			output += render(partial, 0, partial.length(), context);
 			lastTagEnd = tag.end;
 
@@ -418,7 +422,11 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 		tag.key = readTagName(content, pos, endPos);
 	}
 
-	if (tag.type != Tag::Value) {
+	if (tag.type == Tag::Partial) {
+		int oldStart = tag.start;
+		expandTag(tag, content);
+		m_indent = QString(oldStart - tag.start, QLatin1Char(' '));
+	} else if (tag.type != Tag::Value) {
 		expandTag(tag, content);
 	}
 

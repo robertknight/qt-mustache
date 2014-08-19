@@ -257,6 +257,7 @@ private:
 	static void expandTag(Tag& tag, const QString& content);
 
 	QStack<QString> m_partialStack;
+	QString m_indent;
 	QString m_error;
 	int m_errorPos;
 	QString m_errorPartial;
@@ -266,6 +267,8 @@ private:
 
 	QString m_defaultTagStartMarker;
 	QString m_defaultTagEndMarker;
+
+	static const QRegExp LINE_SEP;
 };
 
 /** A convenience function which renders a template using the given data. */

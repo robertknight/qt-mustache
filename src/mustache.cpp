@@ -418,6 +418,10 @@ Tag Renderer::findTag(const QString& content, int pos, int endPos)
 		tag.key = readTagName(content, pos, endPos);
 	}
 
+	if (tag.type != Tag::Value) {
+		expandTag(tag, content);
+	}
+
 	return tag;
 }
 
@@ -503,3 +507,27 @@ void Renderer::setTagMarkers(const QString& startMarker, const QString& endMarke
 	m_defaultTagEndMarker = endMarker;
 }
 
+void Renderer::expandTag(Tag& tag, const QString& content)
+{
+	int start = tag.start;
+	int end = tag.end;
+
+	// Move start to beginning of line.
+	while (start > 0 && content.at(start - 1) != QLatin1Char('\n')) {
+		--start;
+		if (!content.at(start).isSpace()) {
+			return; // Not standalone.
+		}
+	}
+
+	// Move end to one past end of line.
+	while (end <= content.size() && content.at(end - 1) != QLatin1Char('\n')) {
+		if (end < content.size() && !content.at(end).isSpace()) {
+			return; // Not standalone.
+		}
+		++end;
+	}
+
+	tag.start = start;
+	tag.end = end;
+}

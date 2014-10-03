@@ -108,12 +108,29 @@ QVariant variantMapValue(const QVariant& value, const QString& key)
 	}
 }
 
+QVariant variantMapValueRec(const QVariant& value, const QStringList keyParts)
+{
+	if (keyParts.count() > 1) {
+		QVariant firstValue = variantMapValue(value, keyParts.first());
+		return firstValue.isNull() ? QVariant() : variantMapValueRec(firstValue, keyParts.mid(1));
+	} else {
+		return variantMapValue(value, keyParts.first());
+	}
+}
+
 QVariant QtVariantContext::value(const QString& key) const
 {
-	for (int i = m_contextStack.count()-1; i >= 0; i--) {
-		QVariant value = variantMapValue(m_contextStack.at(i), key);
-		if (!value.isNull()) {
-			return value;
+	if (key == "." && !m_contextStack.isEmpty()) {
+		return m_contextStack.last();
+	} else if (key.contains(".")) {
+		QStringList keyParts = key.split(".");
+		return variantMapValueRec(m_contextStack.last(), keyParts);
+	} else {
+		for (int i = m_contextStack.count()-1; i >= 0; i--) {
+			QVariant value = variantMapValue(m_contextStack.at(i), key);
+			if (!value.isNull()) {
+				return value;
+			}
 		}
 	}
 	return QVariant();

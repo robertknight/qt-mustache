@@ -109,29 +109,27 @@ QVariant variantMapValue(const QVariant& value, const QString& key)
 	}
 }
 
-QVariant variantMapValueRec(const QVariant& value, const QStringList keyParts)
+QVariant variantMapValueForKeyPath(const QVariant& value, const QStringList keyPath)
 {
-	if (keyParts.count() > 1) {
-		QVariant firstValue = variantMapValue(value, keyParts.first());
-		return firstValue.isNull() ? QVariant() : variantMapValueRec(firstValue, keyParts.mid(1));
-	} else {
-		return variantMapValue(value, keyParts.first());
+	if (keyPath.count() > 1) {
+		QVariant firstValue = variantMapValue(value, keyPath.first());
+		return firstValue.isNull() ? QVariant() : variantMapValueForKeyPath(firstValue, keyPath.mid(1));
+	} else if (!keyPath.isEmpty()) {
+		return variantMapValue(value, keyPath.first());
 	}
+	return QVariant();
 }
 
 QVariant QtVariantContext::value(const QString& key) const
 {
 	if (key == "." && !m_contextStack.isEmpty()) {
 		return m_contextStack.last();
-	} else if (key.contains(".")) {
-		QStringList keyParts = key.split(".");
-		return variantMapValueRec(m_contextStack.last(), keyParts);
-	} else {
-		for (int i = m_contextStack.count()-1; i >= 0; i--) {
-			QVariant value = variantMapValue(m_contextStack.at(i), key);
-			if (!value.isNull()) {
-				return value;
-			}
+	}
+	QStringList keyPath = key.split(".");
+	for (int i = m_contextStack.count()-1; i >= 0; i--) {
+		QVariant value = variantMapValueForKeyPath(m_contextStack.at(i), keyPath);
+		if (!value.isNull()) {
+			return value;
 		}
 	}
 	return QVariant();

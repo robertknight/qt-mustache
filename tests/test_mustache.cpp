@@ -115,7 +115,7 @@ void TestMustache::testFalsiness()
 	data["bool"] = 0u;
 	context = Mustache::QtVariantContext(data);
 	output = renderer.render(_template, &context);
-	QVERIFY2(output.isEmpty(), "0 evaluated as truthy");
+	QVERIFY2(output.isEmpty(), "0u evaluated as truthy");
 
 	// test falsiness of 0ll
 	data["bool"] = 0ll;

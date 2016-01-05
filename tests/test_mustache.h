@@ -28,6 +28,7 @@ private Q_SLOTS:
 	void testPartialFile();
 	void testPartials();
 	void testSections();
+	void testFalsiness();
 	void testSetDelimiters();
 	void testValues();
 	void testEscaping();

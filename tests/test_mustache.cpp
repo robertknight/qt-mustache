@@ -99,6 +99,55 @@ void TestMustache::testSections()
 	QCOMPARE(output, expectedOutput);
 }
 
+void TestMustache::testFalsiness()
+{
+	Mustache::Renderer renderer;
+	QVariantHash data;
+	QString _template = "{{#bool}}This should not be shown{{/bool}}";
+
+	// test falsiness of 0
+	data["bool"] = 0;
+	Mustache::QtVariantContext context = Mustache::QtVariantContext(data);
+	QString output = renderer.render(_template, &context);
+	QVERIFY2(output.isEmpty(), "0 evaluated as truthy");
+
+	// test falsiness of 0u
+	data["bool"] = 0u;
+	context = Mustache::QtVariantContext(data);
+	output = renderer.render(_template, &context);
+	QVERIFY2(output.isEmpty(), "0 evaluated as truthy");
+
+	// test falsiness of 0ll
+	data["bool"] = 0ll;
+	context = Mustache::QtVariantContext(data);
+	output = renderer.render(_template, &context);
+	QVERIFY2(output.isEmpty(), "0ll evaluated as truthy");
+
+	// test falsiness of 0ull
+	data["bool"] = 0ull;
+	context = Mustache::QtVariantContext(data);
+	output = renderer.render(_template, &context);
+	QVERIFY2(output.isEmpty(), "0ull evaluated as truthy");
+
+	// test falsiness of 0.0
+	data["bool"] = 0.0;
+	context = Mustache::QtVariantContext(data);
+	output = renderer.render(_template, &context);
+	QVERIFY2(output.isEmpty(), "0.0 evaluated as truthy");
+
+	// test falsiness of 0.0f
+	data["bool"] = 0.0f;
+	context = Mustache::QtVariantContext(data);
+	output = renderer.render(_template, &context);
+	QVERIFY2(output.isEmpty(), "0.0f evaluated as truthy");
+
+	// test falsiness of '\0'
+	data["bool"] = '\0';
+	context = Mustache::QtVariantContext(data);
+	output = renderer.render(_template, &context);
+	QVERIFY2(output.isEmpty(), "'\0' evaluated as truthy");
+}
+
 void TestMustache::testContextLookup()
 {
 	QVariantHash fileMap;

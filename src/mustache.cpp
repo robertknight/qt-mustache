@@ -139,6 +139,13 @@ bool QtVariantContext::isFalse(const QString& key) const
 {
 	QVariant value = this->value(key);
 	switch (value.userType()) {
+	case QMetaType::QChar:
+	case QMetaType::Double:
+	case QMetaType::Float:
+	case QMetaType::Int:
+	case QMetaType::UInt:
+	case QMetaType::LongLong:
+	case QMetaType::ULongLong:
 	case QVariant::Bool:
 		return !value.toBool();
 	case QVariant::List:

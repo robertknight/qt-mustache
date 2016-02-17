@@ -58,8 +58,8 @@ QString unescapeHtml(const QString& escaped)
 	QString unescaped(escaped);
 	unescaped.replace(QLatin1String("&lt;"), QLatin1String("<"));
 	unescaped.replace(QLatin1String("&gt;"), QLatin1String(">"));
-	unescaped.replace(QLatin1String("&amp;"), QLatin1String("&"));
 	unescaped.replace(QLatin1String("&quot;"), QLatin1String("\""));
+	unescaped.replace(QLatin1String("&amp;"), QLatin1String("&"));
 	return unescaped;
 }
 

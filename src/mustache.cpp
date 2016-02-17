@@ -58,8 +58,8 @@ QString unescapeHtml(const QString& escaped)
 	QString unescaped(escaped);
 	unescaped.replace(QLatin1String("&lt;"), QLatin1String("<"));
 	unescaped.replace(QLatin1String("&gt;"), QLatin1String(">"));
-	unescaped.replace(QLatin1String("&amp;"), QLatin1String("&"));
 	unescaped.replace(QLatin1String("&quot;"), QLatin1String("\""));
+	unescaped.replace(QLatin1String("&amp;"), QLatin1String("&"));
 	return unescaped;
 }
 
@@ -149,6 +149,7 @@ bool QtVariantContext::isFalse(const QString& key) const
 	case QVariant::Bool:
 		return !value.toBool();
 	case QVariant::List:
+	case QVariant::StringList:
 		return value.toList().isEmpty();
 	case QVariant::Hash:
 		return value.toHash().isEmpty();
@@ -185,7 +186,7 @@ void QtVariantContext::pop()
 
 int QtVariantContext::listCount(const QString& key) const
 {
-	if (value(key).userType() == QVariant::List) {
+	if (value(key).userType() == QVariant::List || value(key).userType() == QVariant::StringList) {
 		return value(key).toList().count();
 	}
 	return 0;

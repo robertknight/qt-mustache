@@ -408,6 +408,24 @@ void TestMustache::testLambda()
 	QCOMPARE(output, QString("~test~"));
 }
 
+void TestMustache::testQStringListIteration()
+{
+	QStringList list;
+	list << "str1" << "str2" << "str3";
+	QVariantHash args;
+	args["list"] = list;
+	QString output = Mustache::renderTemplate("{{#list}}{{.}}{{/list}}", args);
+	QCOMPARE(output, QString("str1str2str3"));
+}
+
+void TestMustache::testUnescapeHtml()
+{
+	QVariantHash args;
+	args["s"] = "&lt;&gt;&amp;&quot;&amp;quot;";
+	QString output = Mustache::renderTemplate("{{&s}}", args);
+	QCOMPARE(output, QString("<>&\"&quot;"));
+}
+
 #if QT_VERSION >= 0x050000 // JSON classes only in Qt 5+.
 
 void TestMustache::testConformance_data()

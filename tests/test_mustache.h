@@ -37,6 +37,7 @@ private Q_SLOTS:
 	void testIncompleteTag();
 	void testIncompleteSection();
 	void testLambda();
+	void testQStringListIteration();
 #if QT_VERSION >= 0x050000
 	void testConformance();
 	void testConformance_data();

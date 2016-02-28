@@ -149,6 +149,7 @@ bool QtVariantContext::isFalse(const QString& key) const
 	case QVariant::Bool:
 		return !value.toBool();
 	case QVariant::List:
+	case QVariant::StringList:
 		return value.toList().isEmpty();
 	case QVariant::Hash:
 		return value.toHash().isEmpty();
@@ -185,8 +186,9 @@ void QtVariantContext::pop()
 
 int QtVariantContext::listCount(const QString& key) const
 {
-	if (value(key).userType() == QVariant::List) {
-		return value(key).toList().count();
+	const QVariant& item = value(key);
+	if (item.canConvert<QVariantList>()) {
+		return item.toList().count();
 	}
 	return 0;
 }

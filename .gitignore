@@ -1,1 +1,3 @@
 build-debug
+lib
+tests/*.json

@@ -27,15 +27,59 @@ Outputs: `<b>John Smith</b> <a href="mailto:john.smith@gmail.com">john.smith@gma
 For further examples, see the tests in `test_mustache.cpp`
 
 ### Building
- * To build the tests, run `qmake` followed by `make`
+ * To build the tests, run `qmake` followed by `make`.
  * To use qt-mustache in your project, just add the `mustache.h` and `mustache.cpp` files to your project.
-  
+
+### Internal library
+
+You can use qt-mustache as internal library by including the `qt-mustache.pri` file. Here is a minimal example app:
+
+```make
+QT += core
+QT -= gui
+
+include(<path to pri file>/qt-mustache.pri)
+
+CONFIG   += console
+CONFIG   -= app_bundle
+
+TEMPLATE = app
+
+SOURCES += main.cpp
+```
+
+To link statically against qt-mustache you need to change the
+`QT_MUSTACHE_LIBRARY` variable in `config.pri` to `no`.
+
+To link dynamically against qt-mustache you need to change the
+`QT_MUSTACHE_LIBRARY` variable in `config.pri` to `yes`.
+
+### External library
+
+To install qt-mustache as a shared library do the following:
+
+```sh
+qmake
+make
+sudo make install
+```
+
+The default installation directory prefix on unix is `/usr/local/`. If you like
+to change the prefix define the PREFIX variable when calling qmake:
+
+```sh
+qmake PREFIX=/usr
+```
+
+### Tests
+ To run the test go into `tests` directory and run `./tests`.
+
 ### License
- qt-mustache is licensed under the BSD license. 
+ qt-mustache is licensed under the BSD license.
 
 ### Dependencies
  qt-mustache depends on the QtCore library.  It is compatible with Qt 4 and Qt 5.
- 
+
 ## Usage
 
 ### Syntax

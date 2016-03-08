@@ -162,7 +162,7 @@ bool QtVariantContext::isFalse(const QString& key) const
 
 QString QtVariantContext::stringValue(const QString& key) const
 {
-	if (isFalse(key)) {
+	if (isFalse(key) && value(key).userType() != QVariant::Bool) {
 		return QString();
 	}
 	return value(key).toString();

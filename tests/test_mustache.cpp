@@ -37,12 +37,13 @@ void TestMustache::testValues()
 	map["sex"] = "Male";
 	map["company"] = "Smith & Co";
 	map["signature"] = "John Smith of <b>Smith & Co</b>";
+	map["alive"] = false;
 
-	QString _template = "Name: {{name}}, Age: {{age}}, Sex: {{sex}}\n"
+	QString _template = "Name: {{name}}, Age: {{age}}, Sex: {{sex}}, Alive: {{alive}}\n"
 	                    "Company: {{company}}\n"
 	                    "  {{{signature}}}"
 	                    "{{missing-key}}";
-	QString expectedOutput = "Name: John Smith, Age: 42, Sex: Male\n"
+	QString expectedOutput = "Name: John Smith, Age: 42, Sex: Male, Alive: false\n"
 	                         "Company: Smith &amp; Co\n"
 	                         "  John Smith of <b>Smith & Co</b>";
 
@@ -143,6 +144,12 @@ void TestMustache::testFalsiness()
 
 	// test falsiness of '\0'
 	data["bool"] = '\0';
+	context = Mustache::QtVariantContext(data);
+	output = renderer.render(_template, &context);
+	QVERIFY2(output.isEmpty(), "'\0' evaluated as truthy");
+
+	// test falsiness of 'false'
+	data["bool"] = false;
 	context = Mustache::QtVariantContext(data);
 	output = renderer.render(_template, &context);
 	QVERIFY2(output.isEmpty(), "'\0' evaluated as truthy");

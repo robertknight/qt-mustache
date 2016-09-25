@@ -45,7 +45,7 @@ QString escapeHtml(const QString& input)
 		}
 		if (replacement) {
 			escaped.replace(i, 1, QLatin1String(replacement));
-			i += strlen(replacement);
+			i += (int)strlen(replacement);
 		} else {
 			++i;
 		}

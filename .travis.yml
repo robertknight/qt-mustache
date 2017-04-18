@@ -10,4 +10,4 @@ before_install:
  - sudo apt-get install -qq libqtcore4 qt4-qmake libqt5core5 qt5-qmake qt5-default qtchooser
 
 script:
- - qmake && make && ./qt-mustache
+ - qmake && make && cd tests && ./tests

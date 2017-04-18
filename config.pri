@@ -1,0 +1,1 @@
+QT_MUSTACHE_LIBRARY = yes

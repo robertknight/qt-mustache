@@ -488,11 +488,6 @@ void TestMustache::testConformance()
 
 	QString output = renderer.render(template_, &context);
 
-	// We currently fails these spec tests :(
-	QEXPECT_FAIL("partials.json - Standalone Without Previous Line", "TODO", Abort);
-	QEXPECT_FAIL("partials.json - Standalone Without Newline", "TODO", Abort);
-	QEXPECT_FAIL("partials.json - Standalone Indentation", "TODO", Abort);
-
 	QCOMPARE(output, expected);
 }
 

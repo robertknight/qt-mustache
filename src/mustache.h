@@ -191,6 +191,7 @@ struct Tag
 		, start(0)
 		, end(0)
 		, escapeMode(Escape)
+		, indentation(0)
 	{}
 
 	Type type;
@@ -198,6 +199,7 @@ struct Tag
 	int start;
 	int end;
 	EscapeMode escapeMode;
+	int indentation;
 };
 
 /** Renders Mustache templates, replacing mustache tags with

@@ -347,8 +347,23 @@ QString Renderer::render(const QString& _template, int startPos, int endPos, Con
 
 			m_partialStack.push(tag.key);
 
-			QString partial = context->partialValue(tag.key);
-			output += render(partial, 0, partial.length(), context);
+			QString partialContent = context->partialValue(tag.key);
+
+			// If there is a need to add a special indentation to the partial
+			if (tag.indentation > 0) {
+				output += QString(" ").repeated(tag.indentation);
+				// Indenting the output to keep the parent indentation.
+				int posOfLF = partialContent.indexOf("\n", 0);
+				while (posOfLF > 0 && posOfLF < (partialContent.length() - 1)) { // .length() - 1 because we dont want indentation AFTER the last character if it's a LF
+					partialContent = partialContent.insert(posOfLF + 1, QString(" ").repeated(tag.indentation));
+					posOfLF = partialContent.indexOf("\n", posOfLF + 1);
+				}
+			}
+
+			QString partialRendered = render(partialContent, 0, partialContent.length(), context);
+
+			output += partialRendered;
+
 			lastTagEnd = tag.end;
 
 			m_partialStack.pop();
@@ -536,12 +551,16 @@ void Renderer::expandTag(Tag& tag, const QString& content)
 {
 	int start = tag.start;
 	int end = tag.end;
+	int indentation = 0;
 
 	// Move start to beginning of line.
 	while (start > 0 && content.at(start - 1) != QLatin1Char('\n')) {
 		--start;
 		if (!content.at(start).isSpace()) {
 			return; // Not standalone.
+		} else if (content.at(start).category() == QChar::Separator_Space) {
+			// If its an actual "white space" and not a new line, it counts toward indentation.
+			++indentation;
 		}
 	}
 
@@ -555,4 +574,5 @@ void Renderer::expandTag(Tag& tag, const QString& content)
 
 	tag.start = start;
 	tag.end = end;
+	tag.indentation = indentation;
 }

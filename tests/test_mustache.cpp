@@ -287,6 +287,10 @@ void TestMustache::testPartialFile()
 	QString output = renderer.render(_template, &context);
 
 	QCOMPARE(output, QString("Jim Smith -- jim.smith@gmail.com\n"));
+
+	_template = "{{>partial_win}}";
+	output = renderer.render(_template, &context);
+	QCOMPARE(output, QString("Jim Smith -- jim.smith@gmail.com\n"));
 }
 
 void TestMustache::testEscaping()

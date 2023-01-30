@@ -29,6 +29,7 @@ private Q_SLOTS:
 	void testPartials();
 	void testSections();
 	void testFalsiness();
+	void testFloatValues();
 	void testSetDelimiters();
 	void testValues();
 	void testEscaping();

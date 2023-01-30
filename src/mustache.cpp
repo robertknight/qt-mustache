@@ -139,9 +139,12 @@ bool QtVariantContext::isFalse(const QString& key) const
 {
 	QVariant value = this->value(key);
 	switch (value.userType()) {
-	case QMetaType::QChar:
 	case QMetaType::Double:
 	case QMetaType::Float:
+		// QVariant::toBool() rounds floats to the nearest int and then compares
+		// against 0, which is not the falsiness behavior we want.
+		return value.toDouble() == 0.;
+	case QMetaType::QChar:
 	case QMetaType::Int:
 	case QMetaType::UInt:
 	case QMetaType::LongLong:
@@ -162,9 +165,6 @@ bool QtVariantContext::isFalse(const QString& key) const
 
 QString QtVariantContext::stringValue(const QString& key) const
 {
-	if (isFalse(key) && value(key).userType() != QVariant::Bool) {
-		return QString();
-	}
 	return value(key).toString();
 }
 

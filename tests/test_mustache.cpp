@@ -15,6 +15,7 @@
 #include "test_mustache.h"
 
 #include <QDir>
+#include <QList>
 #include <QFile>
 #include <QHash>
 #include <QString>
@@ -52,6 +53,24 @@ void TestMustache::testValues()
 	QString output = renderer.render(_template, &context);
 
 	QCOMPARE(output, expectedOutput);
+}
+
+void TestMustache::testFloatValues()
+{
+  QList<float> values = {-3., -0.5, 0., 0.5, 1., 1.5, 3.};
+
+  for (auto value : values) {
+    QVariantHash map;
+    map["val"] = value;
+    QString _template = "Value: {{val}}";
+    QString expectedOutput = "Value: " + QString::number(value);
+
+    Mustache::Renderer renderer;
+    Mustache::QtVariantContext context(map);
+    QString output = renderer.render(_template, &context);
+
+    QCOMPARE(output, expectedOutput);
+  }
 }
 
 QVariantHash contactInfo(const QString& name, const QString& email)
@@ -135,6 +154,18 @@ void TestMustache::testFalsiness()
 	context = Mustache::QtVariantContext(data);
 	output = renderer.render(_template, &context);
 	QVERIFY2(output.isEmpty(), "0.0 evaluated as truthy");
+
+	// test falsiness of 0.4
+	data["bool"] = 0.4f;
+	context = Mustache::QtVariantContext(data);
+	output = renderer.render(_template, &context);
+	QVERIFY2(!output.isEmpty(), "0.4 evaluated as falsey");
+
+	// test falsiness of 0.5
+	data["bool"] = 0.5f;
+	context = Mustache::QtVariantContext(data);
+	output = renderer.render(_template, &context);
+	QVERIFY2(!output.isEmpty(), "0.5f evaluated as falsey");
 
 	// test falsiness of 0.0f
 	data["bool"] = 0.0f;
@@ -501,4 +532,3 @@ int main(int argc, char** argv)
 	TestMustache testObject;
 	return QTest::qExec(&testObject, argc, argv);
 }
-

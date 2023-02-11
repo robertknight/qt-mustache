@@ -34,7 +34,7 @@ For further examples, see the tests in `test_mustache.cpp`
  qt-mustache is licensed under the BSD license. 
 
 ### Dependencies
- qt-mustache depends on the QtCore library.  It is compatible with Qt 4 and Qt 5.
+ qt-mustache depends on the QtCore library.  It is compatible with Qt 5 and Qt 6.
  
 ## Usage
 

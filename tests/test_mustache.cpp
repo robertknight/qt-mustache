@@ -482,7 +482,7 @@ void TestMustache::testConformance_data()
 		QJsonDocument document = QJsonDocument::fromJson(file.readAll());
 		QJsonArray testCaseValues = document.object()["tests"].toArray();
 
-		foreach (const QJsonValue &testCaseValue, testCaseValues) {
+		for (const QJsonValue &testCaseValue: testCaseValues) {
 			QJsonObject testCaseObject = testCaseValue.toObject();
 
 			QString name = fileName + " - " + testCaseObject["name"].toString();

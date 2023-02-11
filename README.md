@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/robertknight/qt-mustache.svg?branch=master)](https://travis-ci.org/robertknight/qt-mustache)
-
 # Qt Mustache
 
 qt-mustache is a simple library for rendering [Mustache templates](http://mustache.github.com/).

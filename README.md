@@ -1,6 +1,6 @@
 # Qt Mustache
 
-qt-mustache is a simple library for rendering [Mustache templates](http://mustache.github.com/).
+qt-mustache is a simple library for rendering [Mustache templates](https://mustache.github.io/).
 
 ### Example Usage
 
@@ -38,7 +38,7 @@ For further examples, see the tests in `test_mustache.cpp`
 
 ### Syntax
 
-qt-mustache uses the standard Mustache syntax.  See the [Mustache manual](http://mustache.github.com/mustache.5.html) for details.
+qt-mustache uses the standard Mustache syntax.  See the [Mustache manual](https://mustache.github.io/mustache.5.html) for details.
 
 ### Data Sources
 
@@ -64,7 +64,7 @@ of the partial.
 
 ### Lambdas
 
-The [Mustache manual](http://mustache.github.com/mustache.5.html) provides a mechanism to customize rendering of
+The [Mustache manual](https://mustache.github.io/mustache.5.html) provides a mechanism to customize rendering of
 template sections by setting the value for a tag to a callable object (eg. a lambda in Ruby or Javascript),
 which takes the unrendered block of text for a template section and renders it itself.  qt-mustache supports
 this via the `Context::canEval()` and `Context::eval()` methods.

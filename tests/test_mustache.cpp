@@ -119,6 +119,14 @@ void TestMustache::testSections()
 	QCOMPARE(output, expectedOutput);
 }
 
+void TestMustache::testSectionQString()
+{
+	QVariantHash data;
+	data["text"] = "test";
+	QString output = Mustache::renderTemplate("{{#text}}{{text}}{{/text}}", data);
+	QCOMPARE(output, QString("test"));
+}
+
 void TestMustache::testFalsiness()
 {
 	Mustache::Renderer renderer;

@@ -15,7 +15,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 
-find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Core)
 if (Qt6_FOUND)
   target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core)
 else()

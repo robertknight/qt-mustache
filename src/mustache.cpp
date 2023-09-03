@@ -225,7 +225,7 @@ QString PartialFileLoader::getPartial(const QString& name)
 	if (!m_cache.contains(name)) {
 		QString path = m_basePath + '/' + name + ".mustache";
 		QFile file(path);
-		if (file.open(QIODevice::ReadOnly)) {
+		if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
 			QTextStream stream(&file);
 			m_cache.insert(name, stream.readAll());
 		}

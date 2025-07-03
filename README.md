@@ -29,7 +29,7 @@ For further examples, see the tests in `test_mustache.cpp`
  * To use qt-mustache in your project, just add the `mustache.h` and `mustache.cpp` files to your project.
   
 ### License
- qt-mustache is licensed under the BSD license. 
+ qt-mustache is licensed under the BSD 2-Clause Simplified License. 
 
 ### Dependencies
  qt-mustache depends on the QtCore library.  It is compatible with Qt 5 and Qt 6.

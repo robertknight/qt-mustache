@@ -41,9 +41,8 @@ private Q_SLOTS:
 	void testLambda();
 	void testQStringListIteration();
 	void testUnescapeHtml();
-#if QT_VERSION >= 0x050000
+	void testDefaultEscapeModeRaw();
 	void testConformance();
 	void testConformance_data();
-#endif // QT_VERSION >= 0x050000
 };
 

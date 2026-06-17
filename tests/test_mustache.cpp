@@ -15,38 +15,37 @@
 #include "test_mustache.h"
 
 #include <QDir>
-#include <QList>
 #include <QFile>
 #include <QHash>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QList>
 #include <QString>
 
-#if QT_VERSION >= 0x050000
-    #include <QJsonDocument>
-    #include <QJsonObject>
-    #include <QJsonArray>
-#endif // QT_VERSION >= 0x050000
+using Qt::StringLiterals::operator""_s;
 
 // To be able to use QHash<QString, QString> in QFETCH(..).
-typedef QHash<QString, QString> PartialsHash;
+using PartialsHash = QHash<QString, QString>;
 Q_DECLARE_METATYPE(PartialsHash)
 
 void TestMustache::testValues()
 {
 	QVariantHash map;
-	map["name"] = "John Smith";
-	map["age"] = 42;
-	map["sex"] = "Male";
-	map["company"] = "Smith & Co";
-	map["signature"] = "John Smith of <b>Smith & Co</b>";
-	map["alive"] = false;
+	map[u"name"_s] = u"John Smith"_s;
+	map[u"age"_s] = 42;
+	map[u"sex"_s] = u"Male"_s;
+	map[u"company"_s] = u"Smith & Co"_s;
+	map[u"signature"_s] = u"John Smith of <b>Smith & Co</b>"_s;
+	map[u"alive"_s] = false;
 
-	QString _template = "Name: {{name}}, Age: {{age}}, Sex: {{sex}}, Alive: {{alive}}\n"
-	                    "Company: {{company}}\n"
-	                    "  {{{signature}}}"
-	                    "{{missing-key}}";
-	QString expectedOutput = "Name: John Smith, Age: 42, Sex: Male, Alive: false\n"
-	                         "Company: Smith &amp; Co\n"
-	                         "  John Smith of <b>Smith & Co</b>";
+	QString _template = u"Name: {{name}}, Age: {{age}}, Sex: {{sex}}, Alive: {{alive}}\n"_s
+	                    u"Company: {{company}}\n"_s
+	                    u"  {{{signature}}}"_s
+	                    u"{{missing-key}}"_s;
+	QString expectedOutput = u"Name: John Smith, Age: 42, Sex: Male, Alive: false\n"_s
+	                         u"Company: Smith &amp; Co\n"_s
+	                         u"  John Smith of <b>Smith & Co</b>"_s;
 
 	Mustache::Renderer renderer;
 	Mustache::QtVariantContext context(map);
@@ -61,9 +60,9 @@ void TestMustache::testFloatValues()
 
   for (auto value : values) {
     QVariantHash map;
-    map["val"] = value;
-    QString _template = "Value: {{val}}";
-    QString expectedOutput = "Value: " + QString::number(value);
+    map[u"val"_s] = value;
+    QString _template = u"Value: {{val}}"_s;
+    QString expectedOutput = u"Value: "_s + QString::number(value);
 
     Mustache::Renderer renderer;
     Mustache::QtVariantContext context(map);
@@ -76,26 +75,26 @@ void TestMustache::testFloatValues()
 QVariantHash contactInfo(const QString& name, const QString& email)
 {
 	QVariantHash map;
-	map["name"] = name;
-	map["email"] = email;
+	map[u"name"_s] = name;
+	map[u"email"_s] = email;
 	return map;
 }
 
 void TestMustache::testSections()
 {
-	QVariantHash map = contactInfo("John Smith", "john.smith@gmail.com");
+	QVariantHash map = contactInfo(u"John Smith"_s, u"john.smith@gmail.com"_s);
 	QVariantList contacts;
-	contacts << contactInfo("James Dee", "james@dee.org");
-	contacts << contactInfo("Jim Jones", "jim-jones@yahoo.com");
-	map["contacts"] = contacts;
+	contacts << contactInfo(u"James Dee"_s, u"james@dee.org"_s);
+	contacts << contactInfo(u"Jim Jones"_s, u"jim-jones@yahoo.com"_s);
+	map[u"contacts"_s] = contacts;
 
-	QString _template = "Name: {{name}}, Email: {{email}}\n"
-	                    "{{#contacts}}  {{name}} - {{email}}\n{{/contacts}}"
-	                    "{{^contacts}}  No contacts{{/contacts}}";
+	QString _template = u"Name: {{name}}, Email: {{email}}\n"_s
+	                    u"{{#contacts}}  {{name}} - {{email}}\n{{/contacts}}"_s
+	                    u"{{^contacts}}  No contacts{{/contacts}}"_s;
 
-	QString expectedOutput = "Name: John Smith, Email: john.smith@gmail.com\n"
-	                         "  James Dee - james@dee.org\n"
-	                         "  Jim Jones - jim-jones@yahoo.com\n";
+	QString expectedOutput = u"Name: John Smith, Email: john.smith@gmail.com\n"_s
+	                         u"  James Dee - james@dee.org\n"_s
+	                         u"  Jim Jones - jim-jones@yahoo.com\n"_s;
 
 	Mustache::Renderer renderer;
 	Mustache::QtVariantContext context(map);
@@ -104,16 +103,16 @@ void TestMustache::testSections()
 	QCOMPARE(output, expectedOutput);
 
 	// test inverted sections
-	map.remove("contacts");
+	map.remove(u"contacts"_s);
 	context = Mustache::QtVariantContext(map);
 	output = renderer.render(_template, &context);
 
-	expectedOutput = "Name: John Smith, Email: john.smith@gmail.com\n"
-	                 "  No contacts";
+	expectedOutput = u"Name: John Smith, Email: john.smith@gmail.com\n"_s
+	                 u"  No contacts"_s;
 	QCOMPARE(output, expectedOutput);
 
 	// test with an empty list instead of an empty key
-	map["contacts"] = QVariantHash();
+	map[u"contacts"_s] = QVariantHash();
 	context = Mustache::QtVariantContext(map);
 	output = renderer.render(_template, &context);
 	QCOMPARE(output, expectedOutput);
@@ -122,73 +121,73 @@ void TestMustache::testSections()
 void TestMustache::testSectionQString()
 {
 	QVariantHash data;
-	data["text"] = "test";
-	QString output = Mustache::renderTemplate("{{#text}}{{text}}{{/text}}", data);
-	QCOMPARE(output, QString("test"));
+	data[u"text"_s] = u"test"_s;
+	QString output = Mustache::renderTemplate(u"{{#text}}{{text}}{{/text}}"_s, data);
+	QCOMPARE(output, u"test"_s);
 }
 
 void TestMustache::testFalsiness()
 {
 	Mustache::Renderer renderer;
 	QVariantHash data;
-	QString _template = "{{#bool}}This should not be shown{{/bool}}";
+	QString _template = u"{{#bool}}This should not be shown{{/bool}}"_s;
 
 	// test falsiness of 0
-	data["bool"] = 0;
+	data[u"bool"_s] = 0;
 	Mustache::QtVariantContext context = Mustache::QtVariantContext(data);
 	QString output = renderer.render(_template, &context);
 	QVERIFY2(output.isEmpty(), "0 evaluated as truthy");
 
 	// test falsiness of 0u
-	data["bool"] = 0u;
+	data[u"bool"_s] = 0u;
 	context = Mustache::QtVariantContext(data);
 	output = renderer.render(_template, &context);
 	QVERIFY2(output.isEmpty(), "0u evaluated as truthy");
 
 	// test falsiness of 0ll
-	data["bool"] = 0ll;
+	data[u"bool"_s] = 0ll;
 	context = Mustache::QtVariantContext(data);
 	output = renderer.render(_template, &context);
 	QVERIFY2(output.isEmpty(), "0ll evaluated as truthy");
 
 	// test falsiness of 0ull
-	data["bool"] = 0ull;
+	data[u"bool"_s] = 0ull;
 	context = Mustache::QtVariantContext(data);
 	output = renderer.render(_template, &context);
 	QVERIFY2(output.isEmpty(), "0ull evaluated as truthy");
 
 	// test falsiness of 0.0
-	data["bool"] = 0.0;
+	data[u"bool"_s] = 0.0;
 	context = Mustache::QtVariantContext(data);
 	output = renderer.render(_template, &context);
 	QVERIFY2(output.isEmpty(), "0.0 evaluated as truthy");
 
 	// test falsiness of 0.4
-	data["bool"] = 0.4f;
+	data[u"bool"_s] = 0.4f;
 	context = Mustache::QtVariantContext(data);
 	output = renderer.render(_template, &context);
 	QVERIFY2(!output.isEmpty(), "0.4 evaluated as falsey");
 
 	// test falsiness of 0.5
-	data["bool"] = 0.5f;
+	data[u"bool"_s] = 0.5f;
 	context = Mustache::QtVariantContext(data);
 	output = renderer.render(_template, &context);
 	QVERIFY2(!output.isEmpty(), "0.5f evaluated as falsey");
 
 	// test falsiness of 0.0f
-	data["bool"] = 0.0f;
+	data[u"bool"_s] = 0.0f;
 	context = Mustache::QtVariantContext(data);
 	output = renderer.render(_template, &context);
 	QVERIFY2(output.isEmpty(), "0.0f evaluated as truthy");
 
 	// test falsiness of '\0'
-	data["bool"] = '\0';
+	data[u"bool"_s] = '\0';
 	context = Mustache::QtVariantContext(data);
 	output = renderer.render(_template, &context);
 	QVERIFY2(output.isEmpty(), "'\0' evaluated as truthy");
 
 	// test falsiness of 'false'
-	data["bool"] = false;
+	data[u"bool"_s] = false;
 	context = Mustache::QtVariantContext(data);
 	output = renderer.render(_template, &context);
 	QVERIFY2(output.isEmpty(), "'\0' evaluated as truthy");
@@ -197,47 +196,47 @@ void TestMustache::testFalsiness()
 void TestMustache::testContextLookup()
 {
 	QVariantHash fileMap;
-	fileMap["dir"] = "/home/robert";
-	fileMap["name"] = "robert";
+	fileMap[u"dir"_s] = u"/home/robert"_s;
+	fileMap[u"name"_s] = u"robert"_s;
 
 	QVariantList files;
 	QVariantHash file;
-	file["name"] = "test.pdf";
+	file[u"name"_s] = u"test.pdf"_s;
 	files << file;
 
-	fileMap["files"] = files;
+	fileMap[u"files"_s] = files;
 
-	QString _template = "{{#files}}{{dir}}/{{name}}{{/files}}";
+	QString _template = u"{{#files}}{{dir}}/{{name}}{{/files}}"_s;
 
 	Mustache::Renderer renderer;
 	Mustache::QtVariantContext context(fileMap);
 	QString output = renderer.render(_template, &context);
 
-	QCOMPARE(output, QString("/home/robert/test.pdf"));
+	QCOMPARE(output, u"/home/robert/test.pdf"_s);
 }
 
 void TestMustache::testPartials()
 {
 	QHash<QString, QString> partials;
-	partials["file-info"] = "{{name}} {{size}} {{type}}\n";
+	partials[u"file-info"_s] = u"{{name}} {{size}} {{type}}\n"_s;
 
-	QString _template = "{{#files}}{{>file-info}}{{/files}}";
+	QString _template = u"{{#files}}{{>file-info}}{{/files}}"_s;
 
 	QVariantHash map;
 	QVariantList fileList;
 
 	QVariantHash file1;
-	file1["name"] = "mustache.pdf";
-	file1["size"] = "200KB";
-	file1["type"] = "PDF Document";
+	file1[u"name"_s] = u"mustache.pdf"_s;
+	file1[u"size"_s] = u"200KB"_s;
+	file1[u"type"_s] = u"PDF Document"_s;
 
 	QVariantHash file2;
-	file2["name"] = "cv.doc";
-	file2["size"] = "300KB";
-	file2["type"] = "Microsoft Word Document";
+	file2[u"name"_s] = u"cv.doc"_s;
+	file2[u"size"_s] = u"300KB"_s;
+	file2[u"type"_s] = u"Microsoft Word Document"_s;
 
 	fileList << file1 << file2;
-	map["files"] = fileList;
+	map[u"files"_s] = fileList;
 
 	Mustache::Renderer renderer;
 	Mustache::PartialMap partialMap(partials);
@@ -245,24 +244,24 @@ void TestMustache::testPartials()
 	QString output = renderer.render(_template, &context);
 
 	QCOMPARE(output,
-	         QString("mustache.pdf 200KB PDF Document\n"
-	                 "cv.doc 300KB Microsoft Word Document\n"));
+	         u"mustache.pdf 200KB PDF Document\n"_s
+	         u"cv.doc 300KB Microsoft Word Document\n"_s);
 }
 
 void TestMustache::testSetDelimiters()
 {
 	// test changing the markers within a template
 	QVariantHash map;
-	map["name"] = "John Smith";
-	map["phone"] = "01234 567890";
+	map[u"name"_s] = u"John Smith"_s;
+	map[u"phone"_s] = u"01234 567890"_s;
 
 	QString _template =
-	    "{{=<% %>=}}"
-	    "<%name%>{{ }}<%phone%>"
-	    "<%={{ }}=%>"
-	    " {{name}}<% %>{{phone}}";
+	    u"{{=<% %>=}}"_s
+	    u"<%name%>{{ }}<%phone%>"_s
+	    u"<%={{ }}=%>"_s
+	    u" {{name}}<% %>{{phone}}"_s;
 
-	QString expectedOutput = "John Smith{{ }}01234 567890 John Smith<% %>01234 567890";
+	QString expectedOutput = u"John Smith{{ }}01234 567890 John Smith<% %>01234 567890"_s;
 
 	Mustache::Renderer renderer;
 	Mustache::QtVariantContext context(map);
@@ -271,77 +270,77 @@ void TestMustache::testSetDelimiters()
 	QCOMPARE(output, expectedOutput);
 
 	// test changing the default markers
-	renderer.setTagMarkers("%", "%");
-	output = renderer.render("%name%'s phone number is %phone%", &context);
-	QCOMPARE(output, QString("John Smith's phone number is 01234 567890"));
+	renderer.setTagMarkers(u"%"_s, u"%"_s);
+	output = renderer.render(u"%name%'s phone number is %phone%"_s, &context);
+	QCOMPARE(output, u"John Smith's phone number is 01234 567890"_s);
 
-	renderer.setTagMarkers("{{", "}}");
-	output = renderer.render("{{== ==}}", &context);
-	QCOMPARE(renderer.error(), QString("Custom delimiters may not contain '='."));
+	renderer.setTagMarkers(u"{{"_s, u"}}"_s);
+	output = renderer.render(u"{{== ==}}"_s, &context);
+	QCOMPARE(renderer.error(), u"Custom delimiters may not contain '='."_s);
 }
 
 void TestMustache::testErrors()
 {
 	QVariantHash map;
-	map["name"] = "Jim Jones";
+	map[u"name"_s] = u"Jim Jones"_s;
 
 	QHash<QString, QString> partials;
-	partials["buggy-partial"] = "--{{/one}}--";
+	partials[u"buggy-partial"_s] = u"--{{/one}}--"_s;
 
-	QString _template = "{{name}}";
+	QString _template = u"{{name}}"_s;
 
 	Mustache::Renderer renderer;
 	Mustache::PartialMap partialMap(partials);
 	Mustache::QtVariantContext context(map, &partialMap);
 	QString output = renderer.render(_template, &context);
 
-	QCOMPARE(output, QString("Jim Jones"));
+	QCOMPARE(output, u"Jim Jones"_s);
 	QCOMPARE(renderer.error(), QString());
 	QCOMPARE(renderer.errorPos(), -1);
 
-	_template = "{{#one}} {{/two}}";
+	_template = u"{{#one}} {{/two}}"_s;
 	output = renderer.render(_template, &context);
-	QCOMPARE(renderer.error(), QString("Tag start/end key mismatch"));
+	QCOMPARE(renderer.error(), u"Tag start/end key mismatch"_s);
 	QCOMPARE(renderer.errorPos(), 9);
 	QCOMPARE(renderer.errorPartial(), QString());
 
-	_template = "Hello {{>buggy-partial}}";
+	_template = u"Hello {{>buggy-partial}}"_s;
 	output = renderer.render(_template, &context);
-	QCOMPARE(renderer.error(), QString("Unexpected end tag"));
+	QCOMPARE(renderer.error(), u"Unexpected end tag"_s);
 	QCOMPARE(renderer.errorPos(), 2);
-	QCOMPARE(renderer.errorPartial(), QString("buggy-partial"));
+	QCOMPARE(renderer.errorPartial(), u"buggy-partial"_s);
 }
 
 void TestMustache::testPartialFile()
 {
 	QString path = QCoreApplication::applicationDirPath();
 
-	QVariantHash map = contactInfo("Jim Smith", "jim.smith@gmail.com");
+	QVariantHash map = contactInfo(u"Jim Smith"_s, u"jim.smith@gmail.com"_s);
 
-	QString _template = "{{>partial}}";
+	QString _template = u"{{>partial}}"_s;
 
 	Mustache::Renderer renderer;
 	Mustache::PartialFileLoader partialLoader(path);
 	Mustache::QtVariantContext context(map, &partialLoader);
 	QString output = renderer.render(_template, &context);
 
-	QCOMPARE(output, QString("Jim Smith -- jim.smith@gmail.com\n"));
+	QCOMPARE(output, u"Jim Smith -- jim.smith@gmail.com\n"_s);
 }
 
 void TestMustache::testEscaping()
 {
 	QVariantHash map;
-	map["escape"] = "<b>foo</b>";
-	map["unescape"] = "One &amp; Two &quot;quoted&quot;";
-	map["raw"] = "<b>foo</b>";
+	map[u"escape"_s] = u"<b>foo</b>"_s;
+	map[u"unescape"_s] = u"One &amp; Two &quot;quoted&quot;"_s;
+	map[u"raw"_s] = u"<b>foo</b>"_s;
 
-	QString _template = "{{escape}} {{&unescape}} {{{raw}}}";
+	QString _template = u"{{escape}} {{&unescape}} {{{raw}}}"_s;
 
 	Mustache::Renderer renderer;
 	Mustache::QtVariantContext context(map);
 	QString output = renderer.render(_template, &context);
 
-	QCOMPARE(output, QString("&lt;b&gt;foo&lt;/b&gt; One & Two \"quoted\" <b>foo</b>"));
+	QCOMPARE(output, u"&lt;b&gt;foo&lt;/b&gt; One & Two \"quoted\" <b>foo</b>"_s);
 }
 
 class CounterContext : public Mustache::QtVariantContext
@@ -354,19 +353,19 @@ public:
 		, counter(0)
 	{}
 
-	virtual bool canEval(const QString& key) const {
-		return key == "counter";
+	bool canEval(const QString& key) const override {
+		return key == u"counter"_s;
 	}
 
-	virtual QString eval(const QString& key, const QString& _template, Mustache::Renderer* renderer) {
-		if (key == "counter") {
+	QString eval(const QString& key, const QString& _template, Mustache::Renderer* renderer) override {
+		if (key == u"counter"_s) {
 			++counter;
 		}
 		return renderer->render(_template, this);
 	}
 
-	virtual QString stringValue(const QString& key) const {
-		if (key == "count") {
+	QString stringValue(const QString& key) const override {
+		if (key == u"count"_s) {
 			return QString::number(counter);
 		} else {
 			return Mustache::QtVariantContext::stringValue(key);
@@ -378,101 +377,134 @@ void TestMustache::testEval()
 {
 	QVariantHash map;
 	QVariantList list;
-	list << contactInfo("Rob Knight", "robertknight@gmail.com");
-	list << contactInfo("Jim Smith", "jim.smith@smith.org");
-	map["list"] = list;
+	list << contactInfo(u"Rob Knight"_s, u"robertknight@gmail.com"_s);
+	list << contactInfo(u"Jim Smith"_s, u"jim.smith@smith.org"_s);
+	map[u"list"_s] = list;
 
-	QString _template = "{{#list}}{{#counter}}#{{count}} {{name}} {{email}}{{/counter}}\n{{/list}}";
+	QString _template = u"{{#list}}{{#counter}}#{{count}} {{name}} {{email}}{{/counter}}\n{{/list}}"_s;
 
 	Mustache::Renderer renderer;
 	CounterContext context(map);
 	QString output = renderer.render(_template, &context);
-	QCOMPARE(output, QString("#1 Rob Knight robertknight@gmail.com\n"
-	                         "#2 Jim Smith jim.smith@smith.org\n"));
+	QCOMPARE(output, u"#1 Rob Knight robertknight@gmail.com\n"_s
+	                 u"#2 Jim Smith jim.smith@smith.org\n"_s);
 }
 
 void TestMustache::testHelpers()
 {
 	QVariantHash args;
-	args.insert("name", "Jim Smith");
-	args.insert("age", 42);
+	args.insert(u"name"_s, u"Jim Smith"_s);
+	args.insert(u"age"_s, 42);
 
-	QString output = Mustache::renderTemplate("Hello {{name}}, you are {{age}}", args);
-	QCOMPARE(output, QString("Hello Jim Smith, you are 42"));
+	QString output = Mustache::renderTemplate(u"Hello {{name}}, you are {{age}}"_s, args);
+	QCOMPARE(output, u"Hello Jim Smith, you are 42"_s);
 }
 
 void TestMustache::testIncompleteTag()
 {
 	QVariantHash args;
-	args.insert("name", "Jim Smith");
+	args.insert(u"name"_s, u"Jim Smith"_s);
 
-	QString output = Mustache::renderTemplate("Hello {{name}}, you are {", args);
-	QCOMPARE(output, QString("Hello Jim Smith, you are {"));
+	QString output = Mustache::renderTemplate(u"Hello {{name}}, you are {"_s, args);
+	QCOMPARE(output, u"Hello Jim Smith, you are {"_s);
 
-	output = Mustache::renderTemplate("Hello {{name}}, you are {{", args);
-	QCOMPARE(output, QString("Hello Jim Smith, you are {{"));
+	output = Mustache::renderTemplate(u"Hello {{name}}, you are {{"_s, args);
+	QCOMPARE(output, u"Hello Jim Smith, you are {{"_s);
 
-	output = Mustache::renderTemplate("Hello {{name}}, you are {{}", args);
-	QCOMPARE(output, QString("Hello Jim Smith, you are {{}"));
+	output = Mustache::renderTemplate(u"Hello {{name}}, you are {{}"_s, args);
+	QCOMPARE(output, u"Hello Jim Smith, you are {{}"_s);
 }
 
 void TestMustache::testIncompleteSection()
 {
 	QVariantHash args;
-	args.insert("list", QVariantList() << QVariantHash());
+	args.insert(u"list"_s, QVariantList() << QVariantHash());
 
 	Mustache::Renderer renderer;
 	Mustache::QtVariantContext context(args);
-	QString output = renderer.render("{{#list}}", &context);
+	QString output = renderer.render(u"{{#list}}"_s, &context);
 	QCOMPARE(output, QString());
-	QCOMPARE(renderer.error(), QString("No matching end tag found for section"));
+	QCOMPARE(renderer.error(), u"No matching end tag found for section"_s);
 
-	output = renderer.render("{{^list}}", &context);
+	output = renderer.render(u"{{^list}}"_s, &context);
 	QCOMPARE(output, QString());
-	QCOMPARE(renderer.error(), QString("No matching end tag found for inverted section"));
+	QCOMPARE(renderer.error(), u"No matching end tag found for inverted section"_s);
 
-	output = renderer.render("{{/list}}", &context);
+	output = renderer.render(u"{{/list}}"_s, &context);
 	QCOMPARE(output, QString());
-	QCOMPARE(renderer.error(), QString("Unexpected end tag"));
+	QCOMPARE(renderer.error(), u"Unexpected end tag"_s);
 
-	output = renderer.render("{{#list}}{{/foo}}", &context);
+	output = renderer.render(u"{{#list}}{{/foo}}"_s, &context);
 	QCOMPARE(output, QString());
-	QCOMPARE(renderer.error(), QString("Tag start/end key mismatch"));
+	QCOMPARE(renderer.error(), u"Tag start/end key mismatch"_s);
 }
 
 static QString decorate(const QString& text, Mustache::Renderer* r, Mustache::Context* ctx)
 {
-	return "~" + r->render(text, ctx) + "~";
+	return u"~"_s + r->render(text, ctx) + u"~"_s;
 }
 
 void TestMustache::testLambda()
 {
 	QVariantHash args;
-	args["text"] = "test";
-	args["fn"] = QVariant::fromValue(Mustache::QtVariantContext::fn_t(decorate));
-	QString output = Mustache::renderTemplate("{{#fn}}{{text}}{{/fn}}", args);
-	QCOMPARE(output, QString("~test~"));
+	args[u"text"_s] = u"test"_s;
+	args[u"fn"_s] = QVariant::fromValue(Mustache::QtVariantContext::fn_t(decorate));
+	QString output = Mustache::renderTemplate(u"{{#fn}}{{text}}{{/fn}}"_s, args);
+	QCOMPARE(output, u"~test~"_s);
 }
 
 void TestMustache::testQStringListIteration()
 {
 	QStringList list;
-	list << "str1" << "str2" << "str3";
+	list << u"str1"_s << u"str2"_s << u"str3"_s;
 	QVariantHash args;
-	args["list"] = list;
-	QString output = Mustache::renderTemplate("{{#list}}{{.}}{{/list}}", args);
-	QCOMPARE(output, QString("str1str2str3"));
+	args[u"list"_s] = list;
+	QString output = Mustache::renderTemplate(u"{{#list}}{{.}}{{/list}}"_s, args);
+	QCOMPARE(output, u"str1str2str3"_s);
+}
+
+void TestMustache::testDefaultEscapeModeRaw()
+{
+	QVariantHash map;
+	map[u"html"_s] = u"<b>bold</b>"_s;
+	map[u"entity"_s] = u"One &amp; Two"_s;
+
+	// With Raw default, {{key}} should pass through unescaped
+	Mustache::Renderer rawRenderer(Mustache::Tag::Raw);
+	Mustache::QtVariantContext context(map);
+
+	QString output = rawRenderer.render(u"{{html}}"_s, &context);
+	QCOMPARE(output, u"<b>bold</b>"_s);
+
+	// {{{key}}} is still raw
+	output = rawRenderer.render(u"{{{html}}}"_s, &context);
+	QCOMPARE(output, u"<b>bold</b>"_s);
+
+	// {{&key}} still unescapes HTML entities
+	output = rawRenderer.render(u"{{&entity}}"_s, &context);
+	QCOMPARE(output, u"One & Two"_s);
+
+	// Verify default Escape renderer still escapes
+	Mustache::Renderer defaultRenderer;
+	output = defaultRenderer.render(u"{{html}}"_s, &context);
+	QCOMPARE(output, u"&lt;b&gt;bold&lt;/b&gt;"_s);
+
+	// renderTemplate convenience function with Raw
+	output = Mustache::renderTemplate(u"{{html}}"_s, map, Mustache::Tag::Raw);
+	QCOMPARE(output, u"<b>bold</b>"_s);
+
+	// renderTemplate convenience function without explicit mode still escapes
+	output = Mustache::renderTemplate(u"{{html}}"_s, map);
+	QCOMPARE(output, u"&lt;b&gt;bold&lt;/b&gt;"_s);
 }
 
 void TestMustache::testUnescapeHtml()
 {
 	QVariantHash args;
-	args["s"] = "&lt;&gt;&amp;&quot;&amp;quot;";
-	QString output = Mustache::renderTemplate("{{&s}}", args);
-	QCOMPARE(output, QString("<>&\"&quot;"));
+	args[u"s"_s] = u"&lt;&gt;&amp;&quot;&amp;quot;"_s;
+	QString output = Mustache::renderTemplate(u"{{&s}}"_s, args);
+	QCOMPARE(output, u"<>&\"&quot;"_s);
 }
-
-#if QT_VERSION >= 0x050000 // JSON classes only in Qt 5+.
 
 void TestMustache::testConformance_data()
 {
@@ -481,27 +513,28 @@ void TestMustache::testConformance_data()
 	QTest::addColumn<QHash<QString, QString> >("partials");
 	QTest::addColumn<QString>("expected");
 
-	QDir specsDir = QDir(".");
+	QDir specsDir = QDir(u"."_s);
 
-	foreach (const QString &fileName, specsDir.entryList(QStringList() << "*.json")) {
+	const auto jsonFiles = specsDir.entryList(QStringList{u"*.json"_s});
+	for (const QString &fileName : jsonFiles) {
 		QFile file(specsDir.filePath(fileName));
-		QVERIFY2(file.open(QIODevice::ReadOnly), qPrintable(fileName + ": " + file.errorString()));
+		QVERIFY2(file.open(QIODevice::ReadOnly), qPrintable(fileName + u": "_s + file.errorString()));
 
 		QJsonDocument document = QJsonDocument::fromJson(file.readAll());
-		QJsonArray testCaseValues = document.object()["tests"].toArray();
+		QJsonArray testCaseValues = document.object()[u"tests"_s].toArray();
 
 		for (const QJsonValue &testCaseValue: testCaseValues) {
 			QJsonObject testCaseObject = testCaseValue.toObject();
 
-			QString name = fileName + " - " + testCaseObject["name"].toString();
-			QVariantMap data = testCaseObject["data"].toObject().toVariantMap();
-			QString template_ = testCaseObject["template"].toString();
-			QJsonObject partialsObject = testCaseObject["partials"].toObject();
+			QString name = fileName + u" - "_s + testCaseObject[u"name"_s].toString();
+			QVariantMap data = testCaseObject[u"data"_s].toObject().toVariantMap();
+			QString template_ = testCaseObject[u"template"_s].toString();
+			QJsonObject partialsObject = testCaseObject[u"partials"_s].toObject();
 			PartialsHash partials;
-			foreach (const QString &partialName, partialsObject.keys()) {
+			for (const QString &partialName : partialsObject.keys()) {
 				partials.insert(partialName, partialsObject[partialName].toString());
 			}
-			QString expected = testCaseObject["expected"].toString();
+			QString expected = testCaseObject[u"expected"_s].toString();
 
 			QTest::newRow(qPrintable(name)) << data << template_ << partials << expected;
 		}
@@ -529,8 +562,6 @@ void TestMustache::testConformance()
 
 	QCOMPARE(output, expected);
 }
-
-#endif // QT_VERSION >= 0x050000
 
 // Create a QCoreApplication for the test.  In Qt 5 this can be
 // done with QTEST_GUILESS_MAIN().
